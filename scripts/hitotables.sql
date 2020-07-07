@@ -1,9 +1,9 @@
 -- create types for client and databasesystems to use them in an enumerated way
-create type client as enum('mobile', 'native', 'web-based');
+create type Client as enum('Mobile', 'Native', 'WebBased');
+create type DatabaseSystem as enum('MySql', 'PostgreSql');
+create type CatalogueType as enum('UserGroup', 'ApplicationSystem', 'Feature', 'EnterpriseFunction', 'OrganizationalUnit')
 
-create type databasesystem as enum('MySQL', 'PostgreSQL');
-
--- the master table
+-- the main table
 -- client and databasesystem as arrays because they should be [0..n]
 -- inserting new values needs to be like 'VALUES('{"bla","blubb"}')'
 create table softwareproduct(
@@ -12,8 +12,8 @@ create table softwareproduct(
 	comment text,
 	codeRepository VARCHAR(200),
 	homepage VARCHAR(200),
-	client client [],
-	databaseSystem databasesystem []
+	client Client [],
+	databaseSystem DatabaseSystem []
 );
 -- the atomic tables mostly filled with dbpedia data
 create table programmingLibrary(
@@ -37,6 +37,10 @@ create table operatingSystem(
 	label VARCHAR(200) NOT NULL
 );
 create table license(
+	uri VARCHAR(200) PRIMARY KEY,
+	label VARCHAR(200) NOT NULL
+);
+create table component(
 	uri VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL
 );
@@ -70,4 +74,27 @@ create table swp_has_license(
 	swp_uri character varying(200) NOT NULL REFERENCES softwareproduct(uri) ON DELETE CASCADE ON UPDATE CASCADE,
 	license_uri character varying(200) NOT NULL	REFERENCES license(uri) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (swp_uri, license_uri)
+);
+-- ToDo: how to avoid circular reference?
+create table swp_has_component(
+	swp_uri character varying(200) NOT NULL REFERENCES softwareproduct(uri) ON DELETE CASCADE ON UPDATE CASCADE,
+	component_uri character varying(200) NOT NULL REFERENCES softwareproduct(uri) ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (swp_uri, component_uri)
+);
+-- HITO catalogues as one table with type attribute
+create table catalogue(
+	suffix VARCHAR(200) PRIMARY KEY,
+	label VARCHAR(200) NOT NULL,
+	type CatalogueType NOT NULL
+);
+create table classified(
+	suffix VARCHAR(200) PRIMARY KEY,
+	label VARCHAR(200) NOT NULL,
+	catalogue_suffix VARCHAR(200) NOT NULL REFERENCES catalogue(suffix) ON DELETE CASCADE ON UPDATE CASCADE
+);
+create table citation(
+	suffix VARCHAR(200) PRIMARY KEY,
+	label VARCHAR(200) NOT NULL,
+	swp_uri character varying(200) NOT NULL REFERENCES softwareproduct(uri) ON DELETE CASCADE ON UPDATE CASCADE,
+	classified_suffix VARCHAR(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE
 );
