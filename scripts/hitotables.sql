@@ -46,7 +46,7 @@ create table operatingSystem(
 create table license(
 	suffix VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL,
-	uri VARCHAR(229) GENERATED ALWAYS AS ('http://dbpedia.org/resource/' || suffix) STORED
+	uri VARCHAR(233) GENERATED ALWAYS AS ('http://www.ebi.ac.uk/swo/license/' || suffix) STORED
 );
 create table component(
 	suffix VARCHAR(200) PRIMARY KEY,
