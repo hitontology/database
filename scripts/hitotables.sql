@@ -13,7 +13,8 @@ create table softwareproduct(
 	codeRepository VARCHAR(200),
 	homepage VARCHAR(200),
 	client Client [],
-	databaseSystem DatabaseSystem []
+	databaseSystem DatabaseSystem [],
+	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 
 -- the atomic tables mostly filled with dbpedia data
@@ -24,38 +25,46 @@ create table programmingLibrary(
 );
 create table language(
 	suffix VARCHAR(200) PRIMARY KEY,
-	label VARCHAR(200) NOT NULL
+	label VARCHAR(200) NOT NULL,
+	uri VARCHAR(229) GENERATED ALWAYS AS ('http://dbpedia.org/resource/' || suffix) STORED
 );
 create table interoperabilityStandard(
 	suffix VARCHAR(200) PRIMARY KEY,
-	label VARCHAR(200) NOT NULL
+	label VARCHAR(200) NOT NULL,
+	uri VARCHAR(229) GENERATED ALWAYS AS ('http://dbpedia.org/resource/' || suffix) STORED
 );
 create table programmingLanguage(
 	suffix VARCHAR(200) PRIMARY KEY,
-	label VARCHAR(200) NOT NULL
+	label VARCHAR(200) NOT NULL,
+	uri VARCHAR(229) GENERATED ALWAYS AS ('http://dbpedia.org/resource/' || suffix) STORED
 );
 create table operatingSystem(
 	suffix VARCHAR(200) PRIMARY KEY,
-	label VARCHAR(200) NOT NULL
+	label VARCHAR(200) NOT NULL,
+	uri VARCHAR(229) GENERATED ALWAYS AS ('http://dbpedia.org/resource/' || suffix) STORED
 );
 create table license(
 	suffix VARCHAR(200) PRIMARY KEY,
-	label VARCHAR(200) NOT NULL
+	label VARCHAR(200) NOT NULL,
+	uri VARCHAR(229) GENERATED ALWAYS AS ('http://dbpedia.org/resource/' || suffix) STORED
 );
 create table component(
 	suffix VARCHAR(200) PRIMARY KEY,
-	label VARCHAR(200) NOT NULL
+	label VARCHAR(200) NOT NULL,
+	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 -- HITO catalogues as one table with type attribute
 create table catalogue(
 	suffix VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL,
-	type CatalogueType NOT NULL
+	type CatalogueType NOT NULL,
+	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 create table classified(
 	suffix VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL,
-	catalogue_suffix VARCHAR(200) NOT NULL REFERENCES catalogue(suffix) ON DELETE CASCADE ON UPDATE CASCADE
+	catalogue_suffix VARCHAR(200) NOT NULL REFERENCES catalogue(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 create table citation(
 	suffix VARCHAR(200) PRIMARY KEY,
@@ -100,4 +109,3 @@ create table swp_has_component(
 	component_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (swp_suffix, component_suffix)
 );
-
