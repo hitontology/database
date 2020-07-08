@@ -18,5 +18,9 @@ SELECT REPLACE(STR(?uri),"http://dbpedia.org/resource/","") as ?suffix STR(SAMPL
  FILTER(LANGMATCHES(LANG(?label),"en"))
 }'
 
-curl --data-urlencode "query=${queries[language]}" --data-urlencode "format=text/tab-separated-values" https://dbpedia.org/sparql
+for query in "${!queries[@]}"
+do
+	curl --data-urlencode "query=${queries[$query]}" --data-urlencode "format=text/tab-separated-values" https://dbpedia.org/sparql
+
+done
 
