@@ -1,0 +1,22 @@
+#!/bin/bash
+declare -a queries
+queries[language]='SELECT REPLACE(STR(?uri),"http://dbpedia.org/resource/","") as ?suffix STR(SAMPLE(?label)) AS ?label
+{
+ ?uri a dbo:Language;
+      rdfs:label ?label;
+      dbo:iso6391Code [].
+ FILTER(LANGMATCHES(LANG(?label),"en"))
+}'
+
+#  SWO is uploaded to the HITO endpoint
+queries[license]='PREFIX swo: <http://www.ebi.ac.uk/swo/>
+FROM <http://www.ebi.ac.uk/swo/swo.owl/1.7>
+SELECT REPLACE(STR(?uri),"http://dbpedia.org/resource/","") as ?suffix STR(SAMPLE(?label)) AS ?label
+{
+ ?uri a swo:SWO_0000002;
+      rdfs:label ?label.
+ FILTER(LANGMATCHES(LANG(?label),"en"))
+}'
+
+curl --data-urlencode "query=${queries[language]}" --data-urlencode "format=text/tab-separated-values" https://dbpedia.org/sparql
+
