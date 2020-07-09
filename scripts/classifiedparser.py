@@ -1,28 +1,38 @@
 import pandas
 import os
+import sys
+import errno
+import numpy 
 
 filenames={
-#    "applicationsystem.csv":"ApplicationSystem",
+    "applicationsystem.csv":"ApplicationSystem",
     "function.csv":"Function",
-#    "subfeature.csv":"SubFeature",
+    "feature.csv":"Feature",
 }
-#folders=["BbApplicationComponent","BbArchitecture","BbReferenceModel","WhoDhiClient","WhoDhiDataService","WhoDhiHealthcareProvider","WhoDhiHealthSystemManager","WhoDhiSystemCategory"]
-folders=["BbArchitecture"]
+folders=["BbApplicationComponent","BbArchitecture","BbReferenceModel","WhoDhiClient","WhoDhiDataService","WhoDhiHealthcareProvider","WhoDhiHealthSystemManager","WhoDhiSystemCategory"]
+outputBase = "output"
+#folders=["BbArchitecture","BbApplicationComponent","BbReferenceModel","WhoDhiClient"]
 #filenames=["applicationsystem.csv","function.csv"]
 #filenames=["function.csv"]
+inputBase = sys.argv[1]
 for folder in folders:
     for filename in filenames:
-        inPath = folder+"/"+filename;
-        if(os.path.isfile(inPath)):
+        inputPath = inputBase +"/" + folder+"/"+filename
+        if(os.path.isfile(inputPath)):
             #order: foldername + csv-Name with CamelCase is the catalogue_suffix
             catalogueType=filenames[filename]
             catalogue_suffix=folder+catalogueType+"Catalogue"
-            outputfile=catalogueType
-            output=open(folder+"/"+catalogueType+".sql", "w")
+            try:
+                os.makedirs(outputBase)
+            except OSError as e:
+                if e.errno != errno.EEXIST:
+                        raise  # raises the error again
+            outPath = outputBase + "/"+ folder+catalogueType+".sql";
+            output=open(outPath, "w")
             output.write("INSERT INTO classified(suffix,n,label,comment,synonyms,catalogue_suffix) VALUES"+'\n')
 
-            df = pandas.read_csv(inPath)
-            print(df)
+            df = pandas.read_csv(inputPath)
+            print("Transforming ",inputPath,df.shape)
             for index, row in df.iterrows():
 
                 quotedN = "NULL"
@@ -30,19 +40,20 @@ for folder in folders:
                     quotedN = "'"+str(row["n"])+"'"
 
                 quotedComment = "NULL"
-                if "comment" in row:
+                if ("comment" in row) and (not pandas.isna(row["comment"])):
                     quotedComment = "'"+row["comment"]+"'"
                 synonyms = []
-                if "synonyms" in row:
+                if ("synonyms" in row) and (not pandas.isna(row["synonyms"])):
                     synonyms = row["synonyms"].split(";")
 
                 synonymString = ",".join(map(lambda x: '"'+x+'"', synonyms))
 
-                output.write(f"('{row['uri']}',{quotedN},'{row['en']}',{quotedComment},'{{{synonymString}}}','{catalogue_suffix}'),\n")
+                line = f"('{row['uri']}',{quotedN},'{row['en']}',{quotedComment},'{{{synonymString}}}','{catalogue_suffix}'),"
+                output.write(line+"\n")
             output.close()
                 #truncate last char of the file and replace it with ;
-            with open(folder+"/"+catalogueType+".sql", 'rb+') as filehandle:
+            with open(outPath, 'rb+') as filehandle:
                 filehandle.seek(-2, os.SEEK_END)
                 filehandle.truncate()
-            with open (folder+"/"+catalogueType+".sql", "a+") as append:
+            with open (outPath, "a+") as append:
                 append.write(';')
