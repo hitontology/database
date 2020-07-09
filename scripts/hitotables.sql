@@ -60,6 +60,7 @@ create table catalogue(
 );
 create table classified(
 	suffix VARCHAR(200) PRIMARY KEY,
+	n VARCHAR(10),
 	label VARCHAR(200) NOT NULL,
 	comment TEXT,
 	synonyms VARCHAR(200)[],
