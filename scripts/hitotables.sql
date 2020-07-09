@@ -1,3 +1,6 @@
+-- Caution!!
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
 -- create types for client and databasesystems to use them in an enumerated way
 create type Client as enum('Mobile', 'Native', 'WebBased');
 create type DatabaseSystem as enum('MySql', 'PostgreSql');
@@ -48,11 +51,6 @@ create table license(
 	label VARCHAR(200) NOT NULL,
 	uri VARCHAR(233) GENERATED ALWAYS AS ('http://www.ebi.ac.uk/swo/license/' || suffix) STORED
 );
-create table component(
-	suffix VARCHAR(200) PRIMARY KEY,
-	label VARCHAR(200) NOT NULL,
-	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
-);
 -- HITO catalogues as one table with type attribute
 create table catalogue(
 	suffix VARCHAR(200) PRIMARY KEY,
@@ -63,16 +61,25 @@ create table catalogue(
 create table classified(
 	suffix VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL,
+	comment TEXT,
+	synonyms VARCHAR(200)[],
 	catalogue_suffix VARCHAR(200) NOT NULL REFERENCES catalogue(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 create table citation(
 	suffix VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL,
+	comment TEXT,
 	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	classified_suffix VARCHAR(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE
 );
 -- relations from atomics to master
+-- ToDo: check if parent is Feature and child is Feature or function
+create table classified_has_child(
+	parent_suffix character varying(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	child_suffix character varying(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (parent_suffix, child_suffix)
+);
 create table swp_has_programmingLibrary(
 	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	lib_suffix character varying(200) NOT NULL	REFERENCES programmingLibrary(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -104,8 +111,8 @@ create table swp_has_license(
 	PRIMARY KEY (swp_suffix, license_suffix)
 );
 -- ToDo: how to avoid circular reference?
-create table swp_has_component(
-	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
-	component_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
-	PRIMARY KEY (swp_suffix, component_suffix)
+create table swp_has_child(
+	parent_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	child_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (parent_suffix, child_suffix)
 );
