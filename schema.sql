@@ -34,6 +34,8 @@ create table language(
 create table interoperabilityStandard(
 	suffix VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL,
+	comment text,
+	sourceuris VARCHAR(200)[],
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://dbpedia.org/resource/' || suffix) STORED
 );
 create table programmingLanguage(
