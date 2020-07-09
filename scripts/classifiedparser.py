@@ -1,11 +1,12 @@
-import csv
+import pandas as pd
 import os
 filenames={
     "applicationsystem.csv":"ApplicationSystem",
     "function.csv":"Function",
     "subfeature.csv":"SubFeature",
 }
-folders=["BbApplicationComponent","BbArchitecture","BbReferenceModel","WhoDhiClient","WhoDhiDataService","WhoDhiHealthcareProvider","WhoDhiHealthSystemManager","WhoDhiSystemCategory"]
+folders=["smörebröd"]
+#folders=["BbApplicationComponent","BbArchitecture","BbReferenceModel","WhoDhiClient","WhoDhiDataService","WhoDhiHealthcareProvider","WhoDhiHealthSystemManager","WhoDhiSystemCategory"]
 #filenames=["applicationsystem.csv","function.csv"]
 for folder in folders:
     for filename in filenames:
@@ -16,16 +17,18 @@ for folder in folders:
             outputfile=shortFile
             output=open(folder+"/"+shortFile+".sql", "a+")
             output.write("INSERT INTO classified(suffix,label,catalogue_suffix) VALUES"+'\n')
-            with open (folder+"/"+filename) as csvfile:
-                readCSV = csv.reader(csvfile, delimiter=',')
-                next(readCSV, None)
-                for line in readCSV:
-                    output.write('(\''+line[1]+'\',\''+line[2]+'\',\''+catalogue_suffix+'\'),\n')
 
-            output.close()
-            #truncate last char of the file and replace it with ;
-            with open(folder+"/"+shortFile+".sql", 'rb+') as filehandle:
-                filehandle.seek(-2, os.SEEK_END)
-                filehandle.truncate()
-            with open (folder+"/"+shortFile+".sql", "a+") as append:
-                append.write(';')
+            for df in pd.read_csv(folder+"/"+filename, sep=',',chunksize=1):
+                print(df)
+            #readCSV = pd.read_csv(folder+"/"+filename, sep=',',usecols=["en","uri"])
+            #next(readCSV, None)
+            # for line in readCSV:
+            #     output.write('(\''+line[1]+'\',\''+line[0]+'\',\''+catalogue_suffix+'\'),\n')
+            #     #print(line)
+            # output.close()
+            # #truncate last char of the file and replace it with ;
+            # with open(folder+"/"+shortFile+".sql", 'rb+') as filehandle:
+            #     filehandle.seek(-2, os.SEEK_END)
+            #     filehandle.truncate()
+            # with open (folder+"/"+shortFile+".sql", "a+") as append:
+            #     append.write(';')
