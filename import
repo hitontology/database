@@ -1,0 +1,5 @@
+#/bin/bash
+psql -U postgres -d hito < schema.sql
+psql -U postgres -d hito < catalogues.sql
+psql -U postgres -d hito < interoperabilityStandards.sql
+psql -U postgres -d hito < scripts/*.sql
