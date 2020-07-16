@@ -10,10 +10,14 @@ filenames={
     "feature.csv":"Feature",
 }
 folders=["BbApplicationComponent","BbArchitecture","BbReferenceModel","WhoDhiClient","WhoDhiDataService","WhoDhiHealthcareProvider","WhoDhiHealthSystemManager","WhoDhiSystemCategory"]
-outputBase = "output"
+outputBase = "catalogue"
 #folders=["BbArchitecture","BbApplicationComponent","BbReferenceModel","WhoDhiClient"]
 #filenames=["applicationsystem.csv","function.csv"]
 #filenames=["function.csv"]
+
+def quote(s):
+    return "E'"+s.replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
+
 inputBase = sys.argv[1]
 for folder in folders:
     for filename in filenames:
@@ -37,18 +41,18 @@ for folder in folders:
 
                 quotedN = "NULL"
                 if "n" in row:
-                    quotedN = "'"+str(row["n"])+"'"
+                    quotedN = quote(str(row["n"]))
 
                 quotedComment = "NULL"
                 if ("comment" in row) and (not pandas.isna(row["comment"])):
-                    quotedComment = "'"+row["comment"]+"'"
+                    quotedComment = quote(row["comment"])
                 synonyms = []
                 if ("synonyms" in row) and (not pandas.isna(row["synonyms"])):
                     synonyms = row["synonyms"].split(";")
 
                 synonymString = ",".join(map(lambda x: '"'+x+'"', synonyms))
 
-                line = f"('{row['uri']}',{quotedN},'{row['en']}',{quotedComment},'{{{synonymString}}}','{catalogue_suffix}'),"
+                line = f"('{row['uri']}',{quotedN},{quote(row['en'])},{quotedComment},'{{{synonymString}}}','{catalogue_suffix}'),"
                 output.write(line+"\n")
             output.close()
                 #truncate last char of the file and replace it with ;

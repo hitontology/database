@@ -14,7 +14,7 @@ standard = {
           <http://purl.org/dc/terms/source> ?source.
 }''',
     "endpoint": "https://hitontology.eu/sparql",
-    "table": "interoperabilityStandards"
+    "table": "interoperabilityStandard"
 }
 
 language = {
@@ -73,7 +73,7 @@ classes = [standard,language,license,programmingLanguage]
 
 for clazz in classes:
     filename=clazz['table']+".sql"
-    output=open("output/"+filename, "w")
+    output=open("attribute/"+filename, "w")
     output.write("DELETE FROM "+clazz['table']+";\n")
     output.write("INSERT INTO "+clazz['table']+"(suffix,label) VALUES"+'\n')
     parameters = {"query": clazz["query"], "format": "text/tab-separated-values"}
