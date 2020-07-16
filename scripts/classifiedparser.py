@@ -8,8 +8,9 @@ filenames={
     "applicationsystem.csv":"ApplicationSystem",
     "function.csv":"Function",
     "feature.csv":"Feature",
+    "subfeature.csv":"Feature",
 }
-folders=["BbApplicationComponent","BbArchitecture","BbReferenceModel","WhoDhiClient","WhoDhiDataService","WhoDhiHealthcareProvider","WhoDhiHealthSystemManager","WhoDhiSystemCategory"]
+folders=["Bb","WhoDhiClient","WhoDhiDataService","WhoDhiHealthcareProvider","WhoDhiHealthSystemManager","WhoDhiSystemCategory"]
 outputBase = "catalogue"
 #folders=["BbArchitecture","BbApplicationComponent","BbReferenceModel","WhoDhiClient"]
 #filenames=["applicationsystem.csv","function.csv"]
