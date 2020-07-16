@@ -14,7 +14,8 @@ standard = {
           <http://purl.org/dc/terms/source> ?source.
 }''',
     "endpoint": "https://hitontology.eu/sparql",
-    "table": "interoperabilityStandard"
+    "table": "interoperabilityStandard",
+    "fields": "(suffix, label, comment, sourceuris)"
 }
 
 language = {
@@ -26,7 +27,8 @@ language = {
  FILTER(LANGMATCHES(LANG(?label),"en"))
 }''',
     "endpoint": "https://dbpedia.org/sparql",
-    "table": "language"
+    "table": "language",
+    "fields": "(suffix, label)"
 }
 
 #  SWO is uploaded to the HITO endpoint, they are (transitive) subclasses, not instances
@@ -40,7 +42,8 @@ SELECT REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/","") as ?suffix STR(SAMPLE(?
  FILTER(LANGMATCHES(LANG(?label),"en"))
 }''',
     "endpoint": "https://hitontology.eu/sparql",
-    "table": "license"
+    "table": "license",
+    "fields": "(suffix, label)"
 }
 
 programmingLanguage = {
@@ -51,13 +54,14 @@ programmingLanguage = {
  FILTER(LANGMATCHES(LANG(?label),"en"))
 }''',
     "endpoint": "https://dbpedia.org/sparql",
-    "table": "programmingLanguage"
+    "table": "programmingLanguage",
+    "fields": "(suffix, label)"
 }
 
 
 def valueMap(value,isArray):
     if(isArray):
-        return "{" + ",".join(map(lambda v: valueMap(v,False), value.split("|")))  + "}"
+        return '"{' + ",".join(map(lambda v: "'"+v+"'", value.split("|")))  + '}"'
     if(value==''):
         return 'NULL'
     return "E'"+value.replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
@@ -75,7 +79,7 @@ for clazz in classes:
     filename=clazz['table']+".sql"
     output=open("attribute/"+filename, "w")
     output.write("DELETE FROM "+clazz['table']+";\n")
-    output.write("INSERT INTO "+clazz['table']+"(suffix,label) VALUES"+'\n')
+    output.write("INSERT INTO "+clazz['table']+clazz['fields']+" VALUES"+'\n')
     parameters = {"query": clazz["query"], "format": "text/tab-separated-values"}
     resp = requests.get(clazz["endpoint"],params=parameters)
     readCSV = csv.reader(resp.text.splitlines(), delimiter='\t')
