@@ -1,5 +1,3 @@
 #/bin/bash
-psql -U postgres -d hito < schema.sql
-psql -U postgres -d hito < catalogues.sql
-psql -U postgres -d hito < interoperabilityStandards.sql
-psql -U postgres -d hito < scripts/*.sql
+cat schema.sql catalogues.sql scripts/catalogue/*.sql scripts/attribute/*.sql > /tmp/hito.sql
+psql -U postgres -d hito -h localhost < /tmp/hito.sql
