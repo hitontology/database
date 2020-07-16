@@ -6,7 +6,7 @@ standard = {
     "query": '''SELECT REPLACE(STR(?uri),"http://hitontology.eu/ontology/","") as ?suffix
         STR(SAMPLE(?label)) AS ?label
         STR(SAMPLE(?comment)) AS ?comment
-        GROUP_CONCAT(?source;separator="'|'") AS ?sources
+        GROUP_CONCAT(?source;separator="|") AS ?sources
  {
   ?uri a hito:Interoperability;
           rdfs:label ?label;
@@ -61,7 +61,7 @@ programmingLanguage = {
 
 def valueMap(value,isArray):
     if(isArray):
-        return '"{' + ",".join(map(lambda v: "'"+v+"'", value.split("|")))  + '}"'
+        return "'{" + ",".join(map(lambda v: '"'+v+'"', value.split("|")))  + "}'"
     if(value==''):
         return 'NULL'
     return "E'"+value.replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
