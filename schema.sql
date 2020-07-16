@@ -9,7 +9,7 @@ create type CatalogueType as enum('UserGroup', 'ApplicationSystem', 'Feature', '
 -- the main table
 -- client and databasesystem as arrays because they should be [0..n]
 -- inserting new values needs to be like 'VALUES('{"bla","blubb"}')'
-create table softwareproduct(
+create table softwareProduct(
 	suffix VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL,
 	comment text,
