@@ -66,6 +66,7 @@ create table classified(
 	label VARCHAR(200) NOT NULL,
 	comment TEXT,
 	synonyms VARCHAR(200)[],
+	dct_source VARCHAR(200),
 	catalogue_suffix VARCHAR(200) NOT NULL REFERENCES catalogue(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
