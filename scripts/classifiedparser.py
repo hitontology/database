@@ -8,7 +8,7 @@ filenames={
     "applicationsystem.csv":"ApplicationSystem",
     "function.csv":"Function",
     "feature.csv":"Feature",
-    "subfeature.csv":"Feature",
+#    "subfeature.csv":"Feature",
 }
 folders=["Bb","WhoDhiClient","WhoDhiDataService","WhoDhiHealthcareProvider","WhoDhiHealthSystemManager","WhoDhiSystemCategory"]
 outputBase = "catalogue"
