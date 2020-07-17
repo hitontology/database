@@ -8,21 +8,30 @@ filenames={
     "applicationsystem.csv":"ApplicationSystem",
     "function.csv":"Function",
     "feature.csv":"Feature",
-    "subfeature.csv":"Feature",
+    "subfeature.csv":"SubFeature",
 }
 folders=["Bb","WhoDhiClient","WhoDhiDataService","WhoDhiHealthcareProvider","WhoDhiHealthSystemManager","WhoDhiSystemCategory"]
 outputBase = "catalogue"
+try:
+    os.makedirs(outputBase)
+except OSError as e:
+    if e.errno != errno.EEXIST:
+            raise  # raises the error again
 
+def has(row,column):
+    return column in row and not (pandas.isna(row[column]))
 
 def quote(row,column):
-    if (not column in row) or (pandas.isna(row[column])):
-        return "NULL" 
-    return "E'"+str(row[column]).replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
+    if has(row,column):
+        return  "E'"+str(row[column]).replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
+    else:
+        return "NULL"
 
 def quoteArray(row,column):
-    if (not column in row) or (pandas.isna(row[column])):
+    if has(row,column):
+        return "'{" + ",".join(map(lambda v: '"'+v.strip()+'"', row[column].split(";")))  + "}'"
+    else:
         return "'{}'" 
-    return "'{" + ",".join(map(lambda v: '"'+v.strip()+'"', row[column].split(";")))  + "}'"
 
 
 inputBase = sys.argv[1]
@@ -32,30 +41,35 @@ for folder in folders:
         if(os.path.isfile(inputPath)):
             #order: foldername + csv-Name with CamelCase is the catalogue_suffix
             catalogueType=filenames[filename]
-            catalogue_suffix=folder+catalogueType+"Catalogue"
-            try:
-                os.makedirs(outputBase)
-            except OSError as e:
-                if e.errno != errno.EEXIST:
-                        raise  # raises the error again
+            catalogue_suffix=folder+catalogueType.replace("Sub","")+"Catalogue" # sub catalogue is the same as the main one
             outPath = outputBase + "/"+ folder+catalogueType+".sql";
             output=open(outPath, "w")
-            output.write("INSERT INTO classified(suffix,catalogue_suffix,n,label,comment,synonyms,dct_source,dce_sources) VALUES"+'\n')
+            content = f"\echo Importing {catalogue_suffix} from {filename} \n"
+            content += "INSERT INTO classified(suffix,catalogue_suffix,n,label,comment,synonyms,dct_source,dce_sources) VALUES \n";
 
             df = pandas.read_csv(inputPath)
             print("Transforming ",inputPath,df.shape)
-            for index, row in df.iterrows():
-                synonyms = []              
-                if ("synonyms" in row) and (not pandas.isna(row["synonyms"])):
-                    synonyms = row["synonyms"].split(";")
-                synonymString = ",".join(map(lambda x: '"'+x+'"', synonyms))
+            rows = list(map(lambda index_row: index_row[1], df.iterrows())) # persists the rows for multiple uses
 
-                line = f"('{row['uri']}','{catalogue_suffix}',{quote(row,'n')},{quote(row,'en')},{quote(row,'comment')},{quoteArray(row,'synonyms')},{quoteArray(row,'dctsource')},{quoteArray(row,'dcesource')}),"
-                output.write(line+"\n")
+            classifiedLines = map(lambda row:
+                                f"('{row['uri']}','{catalogue_suffix}',{quote(row,'n')},{quote(row,'en')},{quote(row,'comment')},{quoteArray(row,'synonyms')},{quote(row,'dctsource')},{quoteArray(row,'dcesource')})",
+                                rows) 
+            content += ",\n".join(classifiedLines)
+            content += ";\n"
+
+            superRows = list(filter(lambda row: has(row,"super"), rows))
+            if(len(superRows)>0):
+                content += f"INSERT INTO classified_has_child(parent_suffix,child_suffix) VALUES \n";
+                superLines = map(lambda row:
+                                ",\n".join( # flatten
+                                    map(lambda super:
+                                        f"('{super}','{row['uri']}')",
+                                        row['super'].split(";"))),
+                                    rows)
+            
+                content += ",\n".join(superLines)
+                content +=";"
+
+            output.write(content)
             output.close()
-                #truncate last char of the file and replace it with ;
-            with open(outPath, 'rb+') as filehandle:
-                filehandle.seek(-2, os.SEEK_END)
-                filehandle.truncate()
-            with open (outPath, "a+") as append:
-                append.write(';')
+
