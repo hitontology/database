@@ -15,8 +15,8 @@ create table softwareProduct(
 	comment text,
 	codeRepository VARCHAR(200),
 	homepage VARCHAR(200),
-	client Client [],
-	databaseSystem DatabaseSystem [],
+	clients Client [],
+	databaseSystems DatabaseSystem [],
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 
@@ -62,20 +62,22 @@ create table catalogue(
 );
 create table classified(
 	suffix VARCHAR(200) PRIMARY KEY,
+	catalogue_suffix VARCHAR(200) NOT NULL REFERENCES catalogue(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	n VARCHAR(10),
 	label VARCHAR(200) NOT NULL,
 	comment TEXT,
 	synonyms VARCHAR(200)[],
 	dct_source VARCHAR(200),
-	catalogue_suffix VARCHAR(200) NOT NULL REFERENCES catalogue(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	dce_sources VARCHAR(200)[],
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 create table citation(
 	suffix VARCHAR(200) PRIMARY KEY,
+	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	classified_suffix VARCHAR(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	label VARCHAR(200) NOT NULL,
 	comment TEXT,
-	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
-	classified_suffix VARCHAR(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE
+	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 -- relations from atomics to master
 -- ToDo: check if parent is Feature and child is Feature or function
@@ -114,7 +116,8 @@ create table swp_has_license(
 	license_suffix character varying(200) NOT NULL	REFERENCES license(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (swp_suffix, license_suffix)
 );
--- ToDo: how to avoid circular reference?
+-- ToDo: how to avoid circular reference? It would be complicated and of high cost to implement sth like a recursive query-monster, that points out the paths and checks if something is there twice. 
+-- I think the data are structured enough so we don't need this feature. For the stability of the db it has also no effect.
 create table swp_has_child(
 	parent_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	child_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
