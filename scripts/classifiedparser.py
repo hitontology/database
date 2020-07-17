@@ -8,16 +8,22 @@ filenames={
     "applicationsystem.csv":"ApplicationSystem",
     "function.csv":"Function",
     "feature.csv":"Feature",
-#    "subfeature.csv":"Feature",
+    "subfeature.csv":"Feature",
 }
 folders=["Bb","WhoDhiClient","WhoDhiDataService","WhoDhiHealthcareProvider","WhoDhiHealthSystemManager","WhoDhiSystemCategory"]
 outputBase = "catalogue"
-#folders=["BbArchitecture","BbApplicationComponent","BbReferenceModel","WhoDhiClient"]
-#filenames=["applicationsystem.csv","function.csv"]
-#filenames=["function.csv"]
 
-def quote(s):
-    return "E'"+s.replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
+
+def quote(row,column):
+    if (not column in row) or (pandas.isna(row[column])):
+        return "NULL" 
+    return "E'"+str(row[column]).replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
+
+def quoteArray(row,column):
+    if (not column in row) or (pandas.isna(row[column])):
+        return "'{}'" 
+    return "'{" + ",".join(map(lambda v: '"'+v.strip()+'"', row[column].split(";")))  + "}'"
+
 
 inputBase = sys.argv[1]
 for folder in folders:
@@ -34,26 +40,17 @@ for folder in folders:
                         raise  # raises the error again
             outPath = outputBase + "/"+ folder+catalogueType+".sql";
             output=open(outPath, "w")
-            output.write("INSERT INTO classified(suffix,n,label,comment,synonyms,catalogue_suffix) VALUES"+'\n')
+            output.write("INSERT INTO classified(suffix,catalogue_suffix,n,label,comment,synonyms,dct_source,dce_sources) VALUES"+'\n')
 
             df = pandas.read_csv(inputPath)
             print("Transforming ",inputPath,df.shape)
             for index, row in df.iterrows():
-
-                quotedN = "NULL"
-                if "n" in row:
-                    quotedN = quote(str(row["n"]))
-
-                quotedComment = "NULL"
-                if ("comment" in row) and (not pandas.isna(row["comment"])):
-                    quotedComment = quote(row["comment"])
-                synonyms = []
+                synonyms = []              
                 if ("synonyms" in row) and (not pandas.isna(row["synonyms"])):
                     synonyms = row["synonyms"].split(";")
-
                 synonymString = ",".join(map(lambda x: '"'+x+'"', synonyms))
 
-                line = f"('{row['uri']}',{quotedN},{quote(row['en'])},{quotedComment},'{{{synonymString}}}','{catalogue_suffix}'),"
+                line = f"('{row['uri']}','{catalogue_suffix}',{quote(row,'n')},{quote(row,'en')},{quote(row,'comment')},{quoteArray(row,'synonyms')},{quoteArray(row,'dctsource')},{quoteArray(row,'dcesource')}),"
                 output.write(line+"\n")
             output.close()
                 #truncate last char of the file and replace it with ;
