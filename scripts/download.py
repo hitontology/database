@@ -2,6 +2,9 @@ import requests
 import csv
 import os
 
+outputBase = "attribute"
+os.makedirs(outputBase,0o777,True)
+
 standard = {
     "query": '''SELECT REPLACE(STR(?uri),"http://hitontology.eu/ontology/","") as ?suffix
         STR(SAMPLE(?label)) AS ?label
@@ -61,7 +64,8 @@ programmingLanguage = {
 
 def valueMap(value,isArray):
     if(isArray):
-        return "'{" + ",".join(map(lambda v: '"'+v+'"', value.split("|")))  + "}'"
+        values = filter(None,value.split("|")) # remove empty strings on empty results
+        return "'{" + ",".join(map(lambda v: '"'+v+'"', values))  + "}'"
     if(value==''):
         return 'NULL'
     return "E'"+value.replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
@@ -77,7 +81,7 @@ classes = [standard,language,license,programmingLanguage]
 
 for clazz in classes:
     filename=clazz['table']+".sql"
-    output=open("attribute/"+filename, "w")
+    output=open(outputBase+"/"+filename, "w")
     output.write("DELETE FROM "+clazz['table']+";\n")
     output.write("INSERT INTO "+clazz['table']+clazz['fields']+" VALUES"+'\n')
     parameters = {"query": clazz["query"], "format": "text/tab-separated-values"}

@@ -12,11 +12,7 @@ filenames={
 }
 folders=["Bb","WhoDhiClient","WhoDhiDataService","WhoDhiHealthcareProvider","WhoDhiHealthSystemManager","WhoDhiSystemCategory"]
 outputBase = "catalogue"
-try:
-    os.makedirs(outputBase)
-except OSError as e:
-    if e.errno != errno.EEXIST:
-            raise  # raises the error again
+os.makedirs(outputBase,0o777,True)
 
 def has(row,column):
     return column in row and not (pandas.isna(row[column]))
