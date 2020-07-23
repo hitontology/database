@@ -27,7 +27,7 @@ language = {
  ?uri a dbo:Language;
       rdfs:label ?label;
       dbo:iso6391Code [].
- FILTER(LANGMATCHES(LANG(?label),"en"))
+ FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
     "endpoint": "https://dbpedia.org/sparql",
     "table": "language",
@@ -42,7 +42,7 @@ SELECT REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/","") as ?suffix STR(SAMPLE(?
 {
  ?uri rdfs:subClassOf+ swo:SWO_0000002;
       rdfs:label ?label.
- FILTER(LANGMATCHES(LANG(?label),"en"))
+ FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
     "endpoint": "https://hitontology.eu/sparql",
     "table": "license",
@@ -54,7 +54,7 @@ programmingLanguage = {
 {
  ?uri a yago:WikicatProgrammingLanguages ;
       rdfs:label ?label.
- FILTER(LANGMATCHES(LANG(?label),"en"))
+ FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
     "endpoint": "https://dbpedia.org/sparql",
     "table": "programmingLanguage",
