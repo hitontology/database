@@ -38,7 +38,7 @@ language = {
 #  SWO is uploaded to the HITO endpoint, they are (transitive) subclasses, not instances
 license = {
     "query": '''PREFIX swo: <http://www.ebi.ac.uk/swo/>
-SELECT REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/","") as ?suffix STR(SAMPLE(?label)) AS ?label
+SELECT REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/license/","") as ?suffix STR(SAMPLE(?label)) AS ?label
 #FROM <http://www.ebi.ac.uk/swo/swo.owl/1.7>
 {
  ?uri rdfs:subClassOf+ swo:SWO_0000002;
