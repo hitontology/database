@@ -35,7 +35,7 @@ STR(SAMPLE(?comment)) AS ?comment
  OPTIONAL {{?uri hito:client ?client.}}
  OPTIONAL {{?uri hito:databaseSystem ?databaseSystem.}}
 
- FILTER(LANGMATCHES(LANG(?label),"en"))
+ FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }}''',
     "endpoint": "https://hitontology.eu/sparql",
     "table": "SoftwareProduct",
@@ -85,10 +85,6 @@ classes = [softwareProduct] + list(relations)
 
 for clazz in classes:
     filename=clazz['table']+".sql"
-    output=open(outputBase+"/"+filename, "w")
-    output.write(f"\echo Importing {clazz['table']} from {clazz['endpoint']} \n")
-    output.write("DELETE FROM "+clazz['table']+";\n")
-    output.write("INSERT INTO "+clazz['table']+clazz['fields']+" VALUES"+'\n')
     parameters = {"query": clazz["query"], "format": "text/tab-separated-values"}
     resp = requests.get(clazz["endpoint"],params=parameters)
     readCSV = csv.reader(resp.text.splitlines(), delimiter='\t')
@@ -96,6 +92,11 @@ for clazz in classes:
     content = ",\n".join(map(lambda line: insert(line), readCSV))
     if(content == ""):
         print(f"""No entries found for {clazz["table"]}""") #:\n{clazz["query"]}""")
-    output.write(content)
-    output.write(";")
-    output.close()
+    else:
+        output=open(outputBase+"/"+filename, "w")
+        output.write(f"\echo Importing {clazz['table']} from {clazz['endpoint']} \n")
+        output.write("DELETE FROM "+clazz['table']+";\n")
+        output.write("INSERT INTO "+clazz['table']+clazz['fields']+" VALUES"+'\n')
+        output.write(content)
+        output.write(";")
+        output.close()
