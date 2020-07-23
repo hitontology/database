@@ -12,9 +12,10 @@ standard = {
         GROUP_CONCAT(?source;separator="|") AS ?sources
  {
   ?uri a hito:Interoperability;
-          rdfs:label ?label;
-          rdfs:comment ?z;
-          <http://purl.org/dc/terms/source> ?source.
+          rdfs:label ?label.
+
+  OPTIONAL {?uri <http://purl.org/dc/terms/source> ?source.}
+  OPTIONAL {?uri rdfs:comment ?z.}
 }''',
     "endpoint": "https://hitontology.eu/sparql",
     "table": "interoperabilityStandard",
