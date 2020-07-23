@@ -13,7 +13,7 @@ os.makedirs(outputBase,0o777,True)
 # SELECT DISTINCT ?p {?s a hito:SoftwareProduct; ?p ?o.}
 # Of those we only use properties that don't have their own database table in the first query for simpler mapping and to reduce OPTIONAL statements.
 
-suffix = lambda s: f'REPLACE(STR({s}),"http://hitontology.eu/ontology/","")'
+suffix = lambda s: f'REPLACE(STR({s}),".*/","")'
 concat = lambda s: f'GROUP_CONCAT(DISTINCT({s});separator="|")';
 
 softwareProduct = {
@@ -41,6 +41,30 @@ STR(SAMPLE(?comment)) AS ?comment
     "table": "SoftwareProduct",
     "fields": "(suffix, label, comment, coderepository, homepage, clients, databaseSystems)"
 }
+#print(softwareProduct["query"])
+
+relationData = [
+{"p": "softwareProductComponent", "table": "swp_has_child", "fieldList": ["parent_suffix", "child_suffix"]},
+{"p": "interoperability", "table": "swp_has_interoperabilitystandard", "fieldList": ["swp_suffix", "io_suffix"]},
+{"p": "language", "table": "swp_has_language", "fieldList": ["swp_suffix", "lang_suffix"]},
+{"p": "license", "table": "swp_has_license", "fieldList": ["swp_suffix", "license_suffix"]},
+{"p": "operatingSystem", "table": "swp_has_operatingsystem", "fieldList": ["swp_suffix", "os_suffix"]},
+{"p": "programmingLanguage", "table": "swp_has_programminglanguage", "fieldList": ["swp_suffix", "plang_suffix"]},
+{"p": "programmingLibrary", "table": "swp_has_programminglibrary", "fieldList": ["swp_suffix", "lib_suffix"]}
+]
+
+relations = map(lambda d: {
+    "query": f'''SELECT
+{suffix("?uri")} as ?swp_suffix
+{suffix("?x")} as ?{d["fieldList"][1]}
+{{
+ ?uri a hito:SoftwareProduct; hito:{d["p"]} ?x.
+}}''',
+    "endpoint": "https://hitontology.eu/sparql",
+    "table": d['table'],
+    "fields": f"({d['fieldList'][0]},{d['fieldList'][1]})"
+}
+, relationData)
 
 def valueMap(value,isArray):
     if(isArray):
@@ -57,7 +81,7 @@ def insert(values):
     s = ",".join(mapped) 
     return "("+s+")"
 
-classes = [softwareProduct]
+classes = [softwareProduct] + list(relations)
 
 for clazz in classes:
     filename=clazz['table']+".sql"
@@ -70,6 +94,8 @@ for clazz in classes:
     readCSV = csv.reader(resp.text.splitlines(), delimiter='\t')
     next(readCSV, None) # skip CSV header
     content = ",\n".join(map(lambda line: insert(line), readCSV))
+    if(content == ""):
+        print(f"""No entries found for {clazz["table"]}""") #:\n{clazz["query"]}""")
     output.write(content)
     output.write(";")
     output.close()
