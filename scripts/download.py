@@ -18,7 +18,7 @@ standard = {
   OPTIONAL {?uri rdfs:comment ?z.}
 }''',
     "endpoint": "https://hitontology.eu/sparql",
-    "table": "interoperabilityStandard",
+    "table": "InteroperabilityStandard",
     "fields": "(suffix, label, comment, sourceuris)"
 }
 
@@ -31,7 +31,7 @@ language = {
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
     "endpoint": "https://dbpedia.org/sparql",
-    "table": "language",
+    "table": "Language",
     "fields": "(suffix, label)"
 }
 
@@ -46,7 +46,7 @@ SELECT REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/license/","") as ?suffix STR(
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
     "endpoint": "https://hitontology.eu/sparql",
-    "table": "license",
+    "table": "License",
     "fields": "(suffix, label)"
 }
 
@@ -58,7 +58,19 @@ programmingLanguage = {
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
     "endpoint": "https://dbpedia.org/sparql",
-    "table": "programmingLanguage",
+    "table": "ProgrammingLanguage",
+    "fields": "(suffix, label)"
+}
+
+operatingSystem = {
+    "query": '''SELECT REPLACE(STR(?uri),"http://dbpedia.org/resource/","") as ?suffix STR(SAMPLE(?label)) AS ?label
+{
+ ?uri a hito:OperatingSystem ;
+      rdfs:label ?label.
+ FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+}''',
+    "endpoint": "https://hitontology.eu/sparql",
+    "table": "OperatingSystem",
     "fields": "(suffix, label)"
 }
 
@@ -78,7 +90,7 @@ def insert(values):
     s = ",".join(mapped) 
     return "("+s+")"
 
-classes = [standard,language,license,programmingLanguage]
+classes = [standard,language,license,programmingLanguage,operatingSystem]
 
 for clazz in classes:
     filename=clazz['table']+".sql"
