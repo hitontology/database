@@ -43,6 +43,27 @@ STR(SAMPLE(?comment)) AS ?comment
 }
 #print(softwareProduct["query"])
 
+citation = {
+    "query": f'''SELECT
+REPLACE(STR(?uri),".*/","") as ?swp_suffix
+REPLACE(STR(?citation),".*/","") as ?suffix
+REPLACE(STR(?classified),".*/","") as ?classified_suffix
+GROUP_CONCAT(DISTINCT(STR(?label));separator="|") AS ?label
+{{
+ ?uri a  hito:SoftwareProduct;
+       ?p ?citation.
+        ?p rdfs:subPropertyOf hito:citation.
+
+         ?citation ?q ?classified;
+                    rdfs:label ?label.
+                     ?q rdfs:subPropertyOf hito:classified.
+}}''',
+    "endpoint": "https://hitontology.eu/sparql",
+    "table": "Citation",
+    "fields": "(swp_suffix, suffix, classified_suffix, label)"
+}
+#print(citation["query"])
+
 relationData = [
 {"p": "softwareProductComponent", "table": "swp_has_child", "fieldList": ["parent_suffix", "child_suffix"]},
 {"p": "interoperability", "table": "swp_has_interoperabilitystandard", "fieldList": ["swp_suffix", "io_suffix"]},
@@ -81,12 +102,15 @@ def insert(values):
     s = ",".join(mapped) 
     return "("+s+")"
 
-classes = [softwareProduct] + list(relations)
+classes = [softwareProduct,citation] + list(relations)
 
 for clazz in classes:
     filename=clazz['table']+".sql"
     parameters = {"query": clazz["query"], "format": "text/tab-separated-values"}
     resp = requests.get(clazz["endpoint"],params=parameters)
+    if(resp.status_code!=200):
+        print("Error with SPARQL query :\n"+resp.text)
+        continue
     readCSV = csv.reader(resp.text.splitlines(), delimiter='\t')
     next(readCSV, None) # skip CSV header
     content = ",\n".join(map(lambda line: insert(line), readCSV))
