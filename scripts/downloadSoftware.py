@@ -6,8 +6,6 @@ import requests
 import csv
 import os
 
-outputBase = "swp"
-os.makedirs(outputBase,0o777,True)
 
 # Properties candidates for the query were determined via:
 # SELECT DISTINCT ?p {?s a hito:SoftwareProduct; ?p ?o.}
@@ -37,6 +35,7 @@ STR(SAMPLE(?comment)) AS ?comment
 
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }}''',
+    "folder": "swp",
     "endpoint": "https://hitontology.eu/sparql",
     "table": "SoftwareProduct",
     "fields": "(suffix, label, comment, coderepository, homepage, clients, databaseSystems)"
@@ -58,6 +57,7 @@ GROUP_CONCAT(DISTINCT(STR(?label));separator="|") AS ?label
                     rdfs:label ?label.
                      ?q rdfs:subPropertyOf hito:classified.
 }}''',
+    "folder": "relation",
     "endpoint": "https://hitontology.eu/sparql",
     "table": "Citation",
     "fields": "(swp_suffix, suffix, classified_suffix, label)"
@@ -81,6 +81,7 @@ relations = map(lambda d: {
 {{
  ?uri a hito:SoftwareProduct; hito:{d["p"]} ?x.
 }}''',
+    "folder": "relation",
     "endpoint": "https://hitontology.eu/sparql",
     "table": d['table'],
     "fields": f"({d['fieldList'][0]},{d['fieldList'][1]})"
@@ -117,10 +118,13 @@ for clazz in classes:
     if(content == ""):
         print(f"""No entries found for {clazz["table"]}""") #:\n{clazz["query"]}""")
     else:
+        outputBase = clazz["folder"]
+        os.makedirs(outputBase,0o777,True)
         output=open(outputBase+"/"+filename, "w")
         output.write(f"\echo Importing {clazz['table']} from {clazz['endpoint']} \n")
         output.write("DELETE FROM "+clazz['table']+";\n")
         output.write("INSERT INTO "+clazz['table']+clazz['fields']+" VALUES"+'\n')
         output.write(content)
+        output.write("ON CONFLICT DO NOTHING") # skip duplicates instead of cancelling, only for testing
         output.write(";")
         output.close()
