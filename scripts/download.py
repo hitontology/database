@@ -11,7 +11,7 @@ def valueMap(value,isArray):
     if(isArray):
         values = filter(None,value.split("|")) # remove empty strings on empty results
         return "'{" + ",".join(map(lambda v: '"'+v+'"', values))  + "}'"
-    if(value==''):
+    if(value=='' or value.startswith('Unknown')):
         return 'NULL'
     return "E'"+value.replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
 

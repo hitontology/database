@@ -74,7 +74,7 @@ create table classified(
 create table citation(
 	suffix VARCHAR(200) PRIMARY KEY,
 	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
-	classified_suffix VARCHAR(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	classified_suffix VARCHAR(200) REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	label VARCHAR(200) NOT NULL,
 	comment TEXT,
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED

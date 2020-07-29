@@ -131,6 +131,41 @@ STR(SAMPLE(?label)) AS ?label
     "arrayfields": []
 }
 
+classified = {
+    "query": f'''
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX dce: <http://purl.org/dc/elements/1.1/>
+SELECT
+?suffix
+REPLACE(STR(?catalogue),".*/","") as ?catalogue_suffix
+STR(SAMPLE(?n)) AS ?n
+STR(SAMPLE(?label)) AS ?label
+STR(SAMPLE(?comment)) AS ?comment
+{concat("STR(?synonym)")} AS ?synonyms
+{concat("STR(?dct_source)")} AS ?dct_sources
+{concat("STR(?dce_source)")} AS ?dce_sources
+{{
+ ?classified ?p ?catalogue;
+             rdfs:label ?label.
+ 
+ OPTIONAL {{?classified rdfs:comment ?comment.}}
+ OPTIONAL {{?classified skos:altLabel ?synonym.}}
+ OPTIONAL {{?classified hito:memberNr ?n.}}
+ OPTIONAL {{?classified dct:source ?dct_source.}}
+ OPTIONAL {{?classified dce:source ?dce_source.}}
+ ?p rdfs:subPropertyOf hito:catalogue.
+
+ BIND(REPLACE(STR(?classified),".*/","") as ?suffix)
+ FILTER(!STRSTARTS(STR(?suffix),"Unknown")) # We treat UnknownX instances as NULL in DB
+}}''',
+    "folder": "catalogue",
+    "endpoint": "https://hitontology.eu/sparql",
+    "table": "Classified",
+    "fields": "(suffix,catalogue_suffix,n,label,comment,synonyms,dct_source,dce_sources)",
+    "arrayfields": [5,6,7]
+}
+print(classified["query"])
+
 # Properties candidates for the query were determined via:
 # SELECT DISTINCT ?p {?s a hito:SoftwareProduct; ?p ?o.}
 # Of those we only use properties that don't have their own database table in the first query for simpler mapping and to reduce OPTIONAL statements.
@@ -160,5 +195,6 @@ relations = map(lambda d: {
 }
 , relationData)
 
-classes = [standard,language,license,programmingLanguage,operatingSystem,softwareProduct,citation] + list(relations)
+classes = [standard,language,license,programmingLanguage,operatingSystem,softwareProduct,classified,citation] + list(relations)
+#classes = [classified]
 
