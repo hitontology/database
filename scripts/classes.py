@@ -1,57 +1,6 @@
 suffix = lambda s: f'REPLACE(STR({s}),".*/","")'
 concat = lambda s: f'GROUP_CONCAT(DISTINCT({s});separator="|")';
 
-softwareProduct = {
-    "query": f'''SELECT
-{suffix("?uri")} as ?suffix
-SAMPLE(STR(?label)) AS ?label
-STR(SAMPLE(?comment)) AS ?comment
-SAMPLE(?repository) AS ?coderepository
-SAMPLE(?homepage) AS ?homepage
-{concat(suffix("?client"))} AS ?clients
-{concat(suffix("?databaseSystem"))} as ?dbs
-{{
- ?uri a hito:SoftwareProduct;
-      rdfs:label ?label.
- 
- OPTIONAL {{?uri rdfs:comment ?comment.}}
- OPTIONAL {{?uri hito:repository ?repository.}}
- OPTIONAL {{?uri hito:homepage ?homepage.}}
- OPTIONAL {{?uri hito:client ?client.}}
- OPTIONAL {{?uri hito:databaseSystem ?databaseSystem.}}
-
- FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
-}}''',
-    "folder": "swp",
-    "endpoint": "https://hitontology.eu/sparql",
-    "table": "SoftwareProduct",
-    "fields": "(suffix, label, comment, coderepository, homepage, clients, databaseSystems)",
-    "arrayfields": [5,6]
-}
-#print(softwareProduct["query"])
-
-citation = {
-    "query": f'''SELECT
-REPLACE(STR(?uri),".*/","") as ?swp_suffix
-REPLACE(STR(?citation),".*/","") as ?suffix
-REPLACE(STR(?classified),".*/","") as ?classified_suffix
-STR(SAMPLE(?label)) AS ?label
-{{
- ?uri a  hito:SoftwareProduct;
-       ?p ?citation.
-        ?p rdfs:subPropertyOf hito:citation.
-
-         ?citation ?q ?classified;
-                    rdfs:label ?label.
-                     ?q rdfs:subPropertyOf hito:classified.
-}}''',
-    "folder": "relation",
-    "endpoint": "https://hitontology.eu/sparql",
-    "table": "Citation",
-    "fields": "(swp_suffix, suffix, classified_suffix, label)",
-    "arrayfields": []
-}
-
 standard = {
     "query": f'''SELECT REPLACE(STR(?uri),"http://hitontology.eu/ontology/","") as ?suffix
         STR(SAMPLE(?label)) AS ?label
@@ -128,6 +77,57 @@ operatingSystem = {
     "endpoint": "https://hitontology.eu/sparql",
     "table": "OperatingSystem",
     "fields": "(suffix, label)",
+    "arrayfields": []
+}
+
+softwareProduct = {
+    "query": f'''SELECT
+{suffix("?uri")} as ?suffix
+SAMPLE(STR(?label)) AS ?label
+STR(SAMPLE(?comment)) AS ?comment
+SAMPLE(?repository) AS ?coderepository
+SAMPLE(?homepage) AS ?homepage
+{concat(suffix("?client"))} AS ?clients
+{concat(suffix("?databaseSystem"))} as ?dbs
+{{
+ ?uri a hito:SoftwareProduct;
+      rdfs:label ?label.
+ 
+ OPTIONAL {{?uri rdfs:comment ?comment.}}
+ OPTIONAL {{?uri hito:repository ?repository.}}
+ OPTIONAL {{?uri hito:homepage ?homepage.}}
+ OPTIONAL {{?uri hito:client ?client.}}
+ OPTIONAL {{?uri hito:databaseSystem ?databaseSystem.}}
+
+ FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+}}''',
+    "folder": "swp",
+    "endpoint": "https://hitontology.eu/sparql",
+    "table": "SoftwareProduct",
+    "fields": "(suffix, label, comment, coderepository, homepage, clients, databaseSystems)",
+    "arrayfields": [5,6]
+}
+#print(softwareProduct["query"])
+
+citation = {
+    "query": f'''SELECT
+REPLACE(STR(?uri),".*/","") as ?swp_suffix
+REPLACE(STR(?citation),".*/","") as ?suffix
+REPLACE(STR(?classified),".*/","") as ?classified_suffix
+STR(SAMPLE(?label)) AS ?label
+{{
+ ?uri a  hito:SoftwareProduct;
+       ?p ?citation.
+        ?p rdfs:subPropertyOf hito:citation.
+
+         ?citation ?q ?classified;
+                    rdfs:label ?label.
+                     ?q rdfs:subPropertyOf hito:classified.
+}}''',
+    "folder": "relation",
+    "endpoint": "https://hitontology.eu/sparql",
+    "table": "Citation",
+    "fields": "(swp_suffix, suffix, classified_suffix, label)",
     "arrayfields": []
 }
 
