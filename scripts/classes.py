@@ -164,7 +164,23 @@ STR(SAMPLE(?comment)) AS ?comment
     "fields": "(suffix,catalogue_suffix,n,label,comment,synonyms,dct_source,dce_sources)",
     "arrayfields": [5,6,7]
 }
-print(classified["query"])
+
+classifiedComponent = {
+    "query": f'''
+SELECT
+{suffix("?parent")} AS ?parent_suffix
+{suffix("?child")} AS ?child_suffix
+{{
+ ?child ?p ?parent.
+ ?p rdfs:subPropertyOf hito:subClassifiedOf. 
+}}''',
+    "folder": "relation",
+    "endpoint": "https://hitontology.eu/sparql",
+    "table": "classified_has_child",
+    "fields": "(parent_suffix,child_suffix)",
+    "arrayfields": []
+}
+print(classifiedComponent["query"])
 
 # Properties candidates for the query were determined via:
 # SELECT DISTINCT ?p {?s a hito:SoftwareProduct; ?p ?o.}
@@ -195,6 +211,6 @@ relations = map(lambda d: {
 }
 , relationData)
 
-classes = [standard,language,license,programmingLanguage,operatingSystem,softwareProduct,classified,citation] + list(relations)
+classes = [standard,language,license,programmingLanguage,operatingSystem,softwareProduct,classified,classifiedComponent,citation] + list(relations)
 #classes = [classified]
 
