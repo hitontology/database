@@ -5,6 +5,7 @@ Contains software products and related attributes, such as licenses
 ## Requirements
 * bash
 * Python 3
+* psql
 * tunnel from the HITO database to localhost
 
 ## Usage

@@ -107,7 +107,6 @@ SAMPLE(?homepage) AS ?homepage
     "fields": "(suffix, label, comment, coderepository, homepage, clients, databaseSystems)",
     "arrayfields": [5,6]
 }
-#print(softwareProduct["query"])
 
 citation = {
     "query": f'''SELECT
@@ -180,7 +179,6 @@ SELECT
     "fields": "(parent_suffix,child_suffix)",
     "arrayfields": []
 }
-print(classifiedComponent["query"])
 
 # Properties candidates for the query were determined via:
 # SELECT DISTINCT ?p {?s a hito:SoftwareProduct; ?p ?o.}
@@ -212,5 +210,4 @@ relations = map(lambda d: {
 , relationData)
 
 classes = [standard,language,license,programmingLanguage,operatingSystem,softwareProduct,classified,classifiedComponent,citation] + list(relations)
-#classes = [classified]
 

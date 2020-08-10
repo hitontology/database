@@ -1,5 +1,0 @@
-#/bin/bash
-rm scripts/catalogue/*.sql
-cd scripts
-python classifiedparser.py  ~/projekte/hito/csv2rdf
-cd ..

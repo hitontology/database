@@ -5,6 +5,7 @@
 import requests
 import csv
 import os
+import shutil
 from classes import classes
 
 def valueMap(value,isArray):
@@ -36,7 +37,9 @@ for clazz in classes:
     if(content == ""):
         print(f"""No entries found for {clazz["table"]}""") #:\n{clazz["query"]}""")
     else:
-        outputBase = clazz["folder"]
+        outputBase = "tmp/"+clazz["folder"]
+        if os.path.exists(outputBase):
+            shutil.rmtree(outputBase)
         os.makedirs(outputBase,0o777,True)
         output=open(outputBase+"/"+filename, "w")
         output.write(f"\echo Importing {clazz['table']} from {clazz['endpoint']} \n")
