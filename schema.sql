@@ -38,6 +38,7 @@ create table language(
 create table interoperabilityStandard(
 	suffix VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL,
+	CHECK (label <> ''),
 	comment text,
 	sourceuris VARCHAR(200)[],
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://dbpedia.org/resource/' || suffix) STORED
@@ -61,6 +62,7 @@ create table license(
 create table catalogue(
 	suffix VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL,
+	CHECK (label <> ''),
 	type CatalogueType NOT NULL,
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
@@ -69,7 +71,9 @@ create table classified(
 	catalogue_suffix VARCHAR(200) NOT NULL REFERENCES catalogue(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	n VARCHAR(10),
 	label VARCHAR(200) NOT NULL,
+	CHECK (label <> ''),
 	comment TEXT,
+	CHECK (comment <> ''),
 	synonyms VARCHAR(200)[],
 	dct_source VARCHAR(200),
 	dce_sources VARCHAR(200)[],
@@ -80,7 +84,9 @@ create table citation(
 	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	classified_suffix VARCHAR(200) REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	label VARCHAR(200) NOT NULL,
+	CHECK (label <> ''),
 	comment TEXT,
+	CHECK (comment <> ''),
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 -- relations from atomics to master
