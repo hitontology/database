@@ -12,9 +12,13 @@ create type CatalogueType as enum('UserGroup', 'ApplicationSystem', 'Feature', '
 create table softwareProduct(
 	suffix VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL,
+	CHECK (label <> ''),
 	comment text,
+	CHECK (comment <> ''),
 	codeRepository VARCHAR(200),
+	CHECK (codeRepository <> ''),
 	homepage VARCHAR(200),
+	CHECK (homepage <> ''),
 	clients Client [],
 	databaseSystems DatabaseSystem [],
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
