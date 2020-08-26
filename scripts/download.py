@@ -8,13 +8,16 @@ import os
 import shutil
 from classes import classes
 
+def escape(s):
+    return "E'"+s.replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
+
 def valueMap(value,isArray):
     if(isArray):
         values = filter(None,value.split("|")) # remove empty strings on empty results
         return "'{" + ",".join(map(lambda v: '"'+v+'"', values))  + "}'"
     if(value=='' or value.startswith('Unknown')):
         return 'NULL'
-    return "E'"+value.replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
+    return escape(value)
 
 def insert(values,arrayfields):
     mapped = []
@@ -23,8 +26,10 @@ def insert(values,arrayfields):
     s = ",".join(mapped) 
     return "("+s+")"
 
+outputBase = "tmp/"
+if os.path.exists(outputBase):
+    shutil.rmtree(outputBase)
 for clazz in classes:
-    print("Downloading "+clazz["table"])
     filename=clazz['table']+".sql"
     parameters = {"query": clazz["query"], "format": "text/tab-separated-values"}
     resp = requests.get(clazz["endpoint"],params=parameters)
@@ -33,18 +38,18 @@ for clazz in classes:
         continue
     readCSV = csv.reader(resp.text.splitlines(), delimiter='\t')
     next(readCSV, None) # skip CSV header
-    content = ",\n".join(map(lambda line: insert(line,clazz["arrayfields"]), readCSV))
-    if(content == ""):
+    rows = list(readCSV)
+    if len(rows)==0:
         print(f"""No entries found for {clazz["table"]}""") #:\n{clazz["query"]}""")
     else:
-        outputBase = "tmp/"+clazz["folder"]
-        if os.path.exists(outputBase):
-            shutil.rmtree(outputBase)
-        os.makedirs(outputBase,0o777,True)
-        output=open(outputBase+"/"+filename, "w")
-        output.write(f"\echo Importing {clazz['table']} from {clazz['endpoint']} \n")
+        folder= "tmp/"+clazz["folder"]
+        if not os.path.exists(folder):
+            os.makedirs(folder,0o777,True)
+        output=open(folder+"/"+filename, "w")
+        print("Downloading class "+clazz["table"])
         output.write("DELETE FROM "+clazz['table']+";\n")
         output.write("INSERT INTO "+clazz['table']+clazz['fields']+" VALUES"+'\n')
+        content = ",\n".join(map(lambda line: insert(line,clazz["arrayfields"]), rows))
         output.write(content)
         output.write("ON CONFLICT DO NOTHING") # skip duplicates instead of cancelling, only for testing
         output.write(";")
