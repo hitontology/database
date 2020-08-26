@@ -17,67 +17,64 @@ standard = {
     "endpoint": "https://hitontology.eu/sparql",
     "table": "InteroperabilityStandard",
     "fields": "(suffix, label, comment, sourceuris)",
-    "arrayfields": [3]
+    "arrayfields": [3],
+    "enum": False
 }
 
 language = {
-    "query": '''SELECT REPLACE(STR(?uri),"http://dbpedia.org/resource/","") as ?suffix STR(SAMPLE(?label)) AS ?label
+    "query": '''SELECT DISTINCT(REPLACE(STR(?uri),"http://dbpedia.org/resource/","")) as ?suffix
 {
  ?uri a dbo:Language;
-      rdfs:label ?label;
       dbo:iso6391Code [].
- FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
-    "folder": "attribute",
+    "folder": "enum",
     "endpoint": "https://dbpedia.org/sparql",
     "table": "Language",
-    "fields": "(suffix, label)",
-    "arrayfields": []
+    "fields": "(suffix)",
+    "arrayfields": [],
+    "enum": True
 }
 
 #  SWO is uploaded to the HITO endpoint, they are (transitive) subclasses, not instances
 license = {
     "query": '''PREFIX swo: <http://www.ebi.ac.uk/swo/>
-SELECT REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/license/","") as ?suffix STR(SAMPLE(?label)) AS ?label
+SELECT DISTINCT(REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/license/","")) as ?suffix
 #FROM <http://www.ebi.ac.uk/swo/swo.owl/1.7>
 {
- ?uri rdfs:subClassOf+ swo:SWO_0000002;
-      rdfs:label ?label.
- FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+ ?uri rdfs:subClassOf+ swo:SWO_0000002.
 }''',
-    "folder": "attribute",
+    "folder": "enum",
     "endpoint": "https://hitontology.eu/sparql",
     "table": "License",
-    "fields": "(suffix, label)",
-    "arrayfields": []
+    "fields": "(suffix)",
+    "arrayfields": [],
+    "enum": True
 }
 
 programmingLanguage = {
-    "query": '''SELECT REPLACE(STR(?uri),"http://dbpedia.org/resource/","") as ?suffix STR(SAMPLE(?label)) AS ?label
+    "query": '''SELECT DISTINCT(REPLACE(STR(?uri),"http://dbpedia.org/resource/","")) as ?suffix
 {
- ?uri a yago:WikicatProgrammingLanguages ;
-      rdfs:label ?label.
- FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+ ?uri a yago:WikicatProgrammingLanguages.
 }''',
-    "folder": "attribute",
+    "folder": "enum",
     "endpoint": "https://dbpedia.org/sparql",
     "table": "ProgrammingLanguage",
-    "fields": "(suffix, label)",
-    "arrayfields": []
+    "fields": "(suffix)",
+    "arrayfields": [],
+    "enum": True
 }
 
 operatingSystem = {
-    "query": '''SELECT REPLACE(STR(?uri),"http://dbpedia.org/resource/","") as ?suffix STR(SAMPLE(?label)) AS ?label
+    "query": '''SELECT DISTINCT(REPLACE(STR(?uri),"http://dbpedia.org/resource/","")) as ?suffix
 {
- ?uri a hito:OperatingSystem ;
-      rdfs:label ?label.
- FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+ ?uri a hito:OperatingSystem.
 }''',
-    "folder": "attribute",
+    "folder": "enum",
     "endpoint": "https://hitontology.eu/sparql",
     "table": "OperatingSystem",
-    "fields": "(suffix, label)",
-    "arrayfields": []
+    "fields": "(suffix)",
+    "arrayfields": [],
+    "enum": True
 }
 
 softwareProduct = {
@@ -88,7 +85,12 @@ STR(SAMPLE(?comment)) AS ?comment
 SAMPLE(?repository) AS ?coderepository
 SAMPLE(?homepage) AS ?homepage
 {concat(suffix("?client"))} AS ?clients
-{concat(suffix("?databaseSystem"))} as ?dbs
+{concat(suffix("?databaseSystem"))} as ?databaseSystems
+{concat(suffix("?language"))} as ?languages
+{concat(suffix("?license"))} as ?licenses
+{concat(suffix("?operatingSystem"))} as ?operatingSystems
+{concat(suffix("?programmingLanguage"))} as ?programmingLanguages
+#{concat(suffix("?programmingLibrary"))} as ?programmingLibraries
 {{
  ?uri a hito:SoftwareProduct;
       rdfs:label ?label.
@@ -98,14 +100,20 @@ SAMPLE(?homepage) AS ?homepage
  OPTIONAL {{?uri hito:homepage ?homepage.}}
  OPTIONAL {{?uri hito:client ?client.}}
  OPTIONAL {{?uri hito:databaseSystem ?databaseSystem.}}
+ OPTIONAL {{?uri hito:language ?language.}}
+ OPTIONAL {{?uri hito:license ?license.}}
+ OPTIONAL {{?uri hito:operatingSystem ?operatingSystem.}}
+ OPTIONAL {{?uri hito:programmingLanguage ?programmingLanguage.}}
+ #OPTIONAL {{?uri hito:programmingLibrary ?programmingLibrary.}}
 
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }}''',
     "folder": "swp",
     "endpoint": "https://hitontology.eu/sparql",
     "table": "SoftwareProduct",
-    "fields": "(suffix, label, comment, coderepository, homepage, clients, databaseSystems)",
-    "arrayfields": [5,6]
+    "fields": "(suffix, label, comment, coderepository, homepage, clients, databaseSystems, languages, licenses, operatingSystems, programmingLanguages)",
+    "arrayfields": [5,6,7,8,9,10],
+    "enum": False
 }
 
 citation = {
@@ -127,7 +135,8 @@ STR(SAMPLE(?label)) AS ?label
     "endpoint": "https://hitontology.eu/sparql",
     "table": "Citation",
     "fields": "(swp_suffix, suffix, classified_suffix, label)",
-    "arrayfields": []
+    "arrayfields": [],
+    "enum": False
 }
 
 classified = {
@@ -161,7 +170,8 @@ STR(SAMPLE(?comment)) AS ?comment
     "endpoint": "https://hitontology.eu/sparql",
     "table": "Classified",
     "fields": "(suffix,catalogue_suffix,n,label,comment,synonyms,dct_source,dce_sources)",
-    "arrayfields": [5,6,7]
+    "arrayfields": [5,6,7],
+    "enum": False
 }
 
 classifiedComponent = {
@@ -177,7 +187,8 @@ SELECT
     "endpoint": "https://hitontology.eu/sparql",
     "table": "classified_has_child",
     "fields": "(parent_suffix,child_suffix)",
-    "arrayfields": []
+    "arrayfields": [],
+    "enum": False
 }
 
 # Properties candidates for the query were determined via:
@@ -187,11 +198,11 @@ SELECT
 relationData = [
 {"p": "softwareProductComponent", "table": "swp_has_child", "fieldList": ["parent_suffix", "child_suffix"]},
 {"p": "interoperability", "table": "swp_has_interoperabilitystandard", "fieldList": ["swp_suffix", "io_suffix"]},
-{"p": "language", "table": "swp_has_language", "fieldList": ["swp_suffix", "lang_suffix"]},
-{"p": "license", "table": "swp_has_license", "fieldList": ["swp_suffix", "license_suffix"]},
-{"p": "operatingSystem", "table": "swp_has_operatingsystem", "fieldList": ["swp_suffix", "os_suffix"]},
-{"p": "programmingLanguage", "table": "swp_has_programminglanguage", "fieldList": ["swp_suffix", "plang_suffix"]},
-{"p": "programmingLibrary", "table": "swp_has_programminglibrary", "fieldList": ["swp_suffix", "lib_suffix"]}
+#{"p": "language", "table": "swp_has_language", "fieldList": ["swp_suffix", "lang_suffix"]},
+#{"p": "license", "table": "swp_has_license", "fieldList": ["swp_suffix", "license_suffix"]},
+#{"p": "operatingSystem", "table": "swp_has_operatingsystem", "fieldList": ["swp_suffix", "os_suffix"]},
+#{"p": "programmingLanguage", "table": "swp_has_programminglanguage", "fieldList": ["swp_suffix", "plang_suffix"]},
+#{"p": "programmingLibrary", "table": "swp_has_programminglibrary", "fieldList": ["swp_suffix", "lib_suffix"]}
 ]
 
 relations = map(lambda d: {
@@ -205,7 +216,8 @@ relations = map(lambda d: {
     "endpoint": "https://hitontology.eu/sparql",
     "table": d['table'],
     "fields": f"({d['fieldList'][0]},{d['fieldList'][1]})",
-    "arrayfields": []
+    "arrayfields": [],
+    "enum": False
 }
 , relationData)
 

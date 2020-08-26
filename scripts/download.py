@@ -46,11 +46,17 @@ for clazz in classes:
         if not os.path.exists(folder):
             os.makedirs(folder,0o777,True)
         output=open(folder+"/"+filename, "w")
-        print("Downloading class "+clazz["table"])
-        output.write("DELETE FROM "+clazz['table']+";\n")
-        output.write("INSERT INTO "+clazz['table']+clazz['fields']+" VALUES"+'\n')
-        content = ",\n".join(map(lambda line: insert(line,clazz["arrayfields"]), rows))
-        output.write(content)
-        output.write("ON CONFLICT DO NOTHING") # skip duplicates instead of cancelling, only for testing
-        output.write(";")
+        if clazz["enum"]:
+            print("Downloading enum "+clazz["table"])
+            output.write(f"\echo Importing enum {clazz['table']} from {clazz['endpoint']} \n")
+            content = ",\n".join(map(lambda line: escape(line[0]),rows))
+            output.write(f"create type {clazz['table']} as enum({content});")
+        else:
+            print("Downloading class "+clazz["table"])
+            output.write("DELETE FROM "+clazz['table']+";\n")
+            output.write("INSERT INTO "+clazz['table']+clazz['fields']+" VALUES"+'\n')
+            content = ",\n".join(map(lambda line: insert(line,clazz["arrayfields"]), rows))
+            output.write(content)
+            output.write("ON CONFLICT DO NOTHING") # skip duplicates instead of cancelling, only for testing
+            output.write(";")
         output.close()
