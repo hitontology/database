@@ -82,7 +82,6 @@ create table classified(
 create table citation(
 	suffix VARCHAR(200) PRIMARY KEY,
 	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
-	classified_suffix VARCHAR(200) REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	label VARCHAR(200) NOT NULL,
 	CHECK (label <> ''),
 	comment TEXT,
@@ -90,6 +89,11 @@ create table citation(
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 -- relations from atomics to master
+create table citation_has_classified(
+	citation_suffix character varying(200) NOT NULL REFERENCES citation(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	classified_suffix character varying(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (citation_suffix, classified_suffix)
+);
 -- ToDo: check if parent is Feature and child is Feature or function
 create table classified_has_child(
 	parent_suffix character varying(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,

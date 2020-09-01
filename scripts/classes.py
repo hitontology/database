@@ -110,20 +110,17 @@ SAMPLE(?homepage) AS ?homepage
 
 citation = {
     "query": f'''SELECT
-REPLACE(STR(?uri),".*/","") as ?swp_suffix
 REPLACE(STR(?citation),".*/","") as ?suffix
-REPLACE(STR(?classified),".*/","") as ?classified_suffix
+REPLACE(STR(?uri),".*/","") as ?swp_suffix
 STR(SAMPLE(?label)) AS ?label
 {{
  ?uri a  hito:SoftwareProduct;
-       ?p ?citation.
-        ?p rdfs:subPropertyOf hito:citation.
+     ?p ?citation.
+     ?p rdfs:subPropertyOf hito:citation.
 
-         ?citation ?q ?classified;
-                    rdfs:label ?label.
-                     ?q rdfs:subPropertyOf hito:classified.
+         ?citation rdfs:label ?label.
 }}''',
-    "folder": "relation",
+    "folder": "swp",
     "endpoint": "https://hitontology.eu/sparql",
     "table": "citation",
     "fields": "(suffix,swp_suffix, label)",
@@ -163,6 +160,30 @@ STR(SAMPLE(?comment)) AS ?comment
     "fields": "(suffix,catalogue_suffix,n,label,comment,synonyms,dct_source,dce_sources)",
     "arrayfields": [5,6,7]
 }
+
+# workaround to exclude study citations
+
+citation_has_classified = {
+    "query": f'''
+SELECT
+{suffix("?citation")} AS ?citation_suffix
+{suffix("?classified")} AS ?classified_suffix
+{{
+    ?citation ?p ?classified.
+    ?classified a [rdfs:subClassOf hito:Classified].
+    ?p rdfs:subPropertyOf hito:classified.
+    
+    ?swp a hito:SoftwareProduct; ?q ?citation.
+}}
+GROUP BY ?citation ?classified
+HAVING (COUNT(?swp)>=1)''',
+    "folder": "relation",
+    "endpoint": "https://hitontology.eu/sparql",
+    "table": "citation_has_classified",
+    "fields": "(citation_suffix,classified_suffix)",
+    "arrayfields": []
+}
+print(citation_has_classified["query"])
 
 classifiedComponent = {
     "query": f'''
@@ -209,5 +230,5 @@ relations = map(lambda d: {
 }
 , relationData)
 
-classes = [standard,language,license,programmingLanguage,operatingSystem,softwareProduct,classified,classifiedComponent,citation] + list(relations)
+classes = [standard,language,license,programmingLanguage,operatingSystem,softwareProduct,classified,classifiedComponent,citation,citation_has_classified] + list(relations)
 
