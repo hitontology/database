@@ -47,6 +47,7 @@ for clazz in classes:
             os.makedirs(folder,0o777,True)
         output=open(folder+"/"+filename, "w")
         print("Downloading class "+clazz["table"])
+        output.write("\\echo FILL TABLE "+clazz['table']+"\n")
         output.write("DELETE FROM "+clazz['table']+";\n")
         output.write("INSERT INTO "+clazz['table']+clazz['fields']+" VALUES"+'\n')
         content = ",\n".join(map(lambda line: insert(line,clazz["arrayfields"]), rows))
