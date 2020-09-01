@@ -15,7 +15,7 @@ standard = {
 }}''',
     "folder": "attribute",
     "endpoint": "https://hitontology.eu/sparql",
-    "table": "InteroperabilityStandard",
+    "table": "interoperabilitystandard",
     "fields": "(suffix, label, comment, sourceuris)",
     "arrayfields": [3]
 }
@@ -30,7 +30,7 @@ language = {
 }''',
     "folder": "attribute",
     "endpoint": "https://dbpedia.org/sparql",
-    "table": "Language",
+    "table": "language",
     "fields": "(suffix, label)",
     "arrayfields": []
 }
@@ -47,7 +47,7 @@ SELECT REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/license/","") as ?suffix STR(
 }''',
     "folder": "attribute",
     "endpoint": "https://hitontology.eu/sparql",
-    "table": "License",
+    "table": "license",
     "fields": "(suffix, label)",
     "arrayfields": []
 }
@@ -61,7 +61,7 @@ programmingLanguage = {
 }''',
     "folder": "attribute",
     "endpoint": "https://dbpedia.org/sparql",
-    "table": "ProgrammingLanguage",
+    "table": "programminglanguage",
     "fields": "(suffix, label)",
     "arrayfields": []
 }
@@ -75,7 +75,7 @@ operatingSystem = {
 }''',
     "folder": "attribute",
     "endpoint": "https://hitontology.eu/sparql",
-    "table": "OperatingSystem",
+    "table": "operatingsystem",
     "fields": "(suffix, label)",
     "arrayfields": []
 }
@@ -103,7 +103,7 @@ SAMPLE(?homepage) AS ?homepage
 }}''',
     "folder": "swp",
     "endpoint": "https://hitontology.eu/sparql",
-    "table": "SoftwareProduct",
+    "table": "softwareproduct",
     "fields": "(suffix, label, comment, coderepository, homepage, clients, databaseSystems)",
     "arrayfields": [5,6]
 }
@@ -125,8 +125,8 @@ STR(SAMPLE(?label)) AS ?label
 }}''',
     "folder": "relation",
     "endpoint": "https://hitontology.eu/sparql",
-    "table": "Citation",
-    "fields": "(swp_suffix, suffix, classified_suffix, label)",
+    "table": "citation",
+    "fields": "(suffix,swp_suffix, label)",
     "arrayfields": []
 }
 
@@ -159,7 +159,7 @@ STR(SAMPLE(?comment)) AS ?comment
 }}''',
     "folder": "catalogue",
     "endpoint": "https://hitontology.eu/sparql",
-    "table": "Classified",
+    "table": "classified",
     "fields": "(suffix,catalogue_suffix,n,label,comment,synonyms,dct_source,dce_sources)",
     "arrayfields": [5,6,7]
 }

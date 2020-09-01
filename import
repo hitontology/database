@@ -1,3 +1,3 @@
 #/bin/bash
-cat schema.sql catalogues.sql scripts/tmp/catalogue/Classified.sql scripts/tmp/attribute/*.sql  scripts/tmp/swp/SoftwareProduct.sql scripts/tmp/relation/*.sql > /tmp/hito.sql
+cat schema.sql catalogues.sql scripts/tmp/catalogue/classified.sql scripts/tmp/attribute/*.sql  scripts/tmp/swp/softwareproduct.sql scripts/tmp/relation/*.sql > /tmp/hito.sql
 psql -U postgres -d hito -h localhost < /tmp/hito.sql
