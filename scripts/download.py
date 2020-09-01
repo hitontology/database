@@ -40,7 +40,7 @@ for clazz in classes:
     next(readCSV, None) # skip CSV header
     rows = list(readCSV)
     if len(rows)==0:
-        print(f"""No entries found for {clazz["table"]}""") #:\n{clazz["query"]}""")
+        print(f"""No entries found for {clazz["table"]}:\n{clazz["query"]}""")
     else:
         folder= "tmp/"+clazz["folder"]
         if not os.path.exists(folder):
