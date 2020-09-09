@@ -2,11 +2,11 @@
 DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 -- create types for client and databasesystems to use them in an enumerated way
-create table client(suffix VARCHAR(8) PRIMARY KEY);
-insert into client(suffix) values ('Mobile'), ('Native'), ('WebBased');
+create table client(suffix VARCHAR(8) PRIMARY KEY, label VARCHAR(20) NOT NULL);
+insert into client(suffix,label) values ('Mobile','Mobile'), ('Native','Native'), ('WebBased','Web Based');
 
-create table databasesystem(suffix VARCHAR(10) PRIMARY KEY);
-insert into databasesystem(suffix ) values ('MySql'), ('PostgreSql');
+create table databasesystem(suffix VARCHAR(10) PRIMARY KEY, label VARCHAR(20) NOT NULL);
+insert into databasesystem(suffix,label) values ('MySql','MySql'), ('PostgreSql','PostgreSql');
 
 --create table cataloguetype(suffix VARCHAR(19) PRIMARY KEY);
 -- insert into table cataloguetype(suffix) values ('UserGroup'), ('ApplicationSystem'), ('Feature'), ('EnterpriseFunction'), ('OrganizationalUnit');  
