@@ -87,8 +87,6 @@ SAMPLE(STR(?label)) AS ?label
 STR(SAMPLE(?comment)) AS ?comment
 SAMPLE(?repository) AS ?coderepository
 SAMPLE(?homepage) AS ?homepage
-{concat(suffix("?client"))} AS ?clients
-{concat(suffix("?databaseSystem"))} as ?dbs
 {{
  ?uri a hito:SoftwareProduct;
       rdfs:label ?label.
@@ -96,15 +94,13 @@ SAMPLE(?homepage) AS ?homepage
  OPTIONAL {{?uri rdfs:comment ?comment.}}
  OPTIONAL {{?uri hito:repository ?repository.}}
  OPTIONAL {{?uri hito:homepage ?homepage.}}
- OPTIONAL {{?uri hito:client ?client.}}
- OPTIONAL {{?uri hito:databaseSystem ?databaseSystem.}}
 
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }}''',
     "folder": "swp",
     "endpoint": "https://hitontology.eu/sparql",
     "table": "softwareproduct",
-    "fields": "(suffix, label, comment, coderepository, homepage, clients, databaseSystems)",
+    "fields": "(suffix, label, comment, coderepository, homepage)",
     "arrayfields": [5,6]
 }
 
@@ -212,7 +208,9 @@ relationData = [
 {"p": "license", "table": "swp_has_license", "fieldList": ["swp_suffix", "license_suffix"]},
 {"p": "operatingSystem", "table": "swp_has_operatingsystem", "fieldList": ["swp_suffix", "os_suffix"]},
 {"p": "programmingLanguage", "table": "swp_has_programminglanguage", "fieldList": ["swp_suffix", "plang_suffix"]},
-{"p": "programmingLibrary", "table": "swp_has_programminglibrary", "fieldList": ["swp_suffix", "lib_suffix"]}
+{"p": "programmingLibrary", "table": "swp_has_programminglibrary", "fieldList": ["swp_suffix", "lib_suffix"]},
+{"p": "client", "table": "swp_has_client", "fieldList": ["swp_suffix", "client_suffix"]},
+{"p": "databaseSystem", "table": "swp_has_databasesystem", "fieldList": ["swp_suffix", "db_suffix"]}
 ]
 
 relations = map(lambda d: {

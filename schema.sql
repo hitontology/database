@@ -2,8 +2,14 @@
 DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 -- create types for client and databasesystems to use them in an enumerated way
-create type client as enum('Mobile', 'Native', 'WebBased');
-create type databasesystem as enum('MySql', 'PostgreSql');
+create table client(suffix VARCHAR(8) PRIMARY KEY);
+insert into client(suffix) values ('Mobile'), ('Native'), ('WebBased');
+
+create table databasesystem(suffix VARCHAR(10) PRIMARY KEY);
+insert into databasesystem(suffix ) values ('MySql'), ('PostgreSql');
+
+--create table cataloguetype(suffix VARCHAR(19) PRIMARY KEY);
+-- insert into table cataloguetype(suffix) values ('UserGroup'), ('ApplicationSystem'), ('Feature'), ('EnterpriseFunction'), ('OrganizationalUnit');  
 create type cataloguetype as enum('UserGroup', 'ApplicationSystem', 'Feature', 'EnterpriseFunction', 'OrganizationalUnit');
 
 -- the main table
@@ -19,8 +25,6 @@ create table softwareproduct(
 	CHECK (coderepository <> ''),
 	homepage VARCHAR(200),
 	CHECK (homepage <> ''),
-	clients Client [],
-	databasesystems databasesystem [],
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 
@@ -129,6 +133,16 @@ create table swp_has_license(
 	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	license_suffix character varying(200) NOT NULL	REFERENCES license(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (swp_suffix, license_suffix)
+);
+create table swp_has_client(
+	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	client_suffix character varying(8) NOT NULL REFERENCES client(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (swp_suffix, client_suffix)
+);
+create table swp_has_databasesystem(
+	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	db_suffix character varying(10) NOT NULL REFERENCES databasesystem(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (swp_suffix, db_suffix)
 );
 -- ToDo: how to avoid circular reference? It would be complicated and of high cost to implement sth like a recursive query-monster, that points out the paths and checks if something is there twice. 
 -- I think the data are structured enough so we don't need this feature. For the stability of the db it has also no effect.
