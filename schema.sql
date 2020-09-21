@@ -90,6 +90,7 @@ create table citation(
 	CHECK (label <> ''),
 	comment TEXT,
 	CHECK (comment <> ''),
+	type cataloguetype NOT NULL,
 	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 -- relations from atomics to master

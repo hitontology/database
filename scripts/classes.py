@@ -109,17 +109,22 @@ citation = {
 REPLACE(STR(?citation),".*/","") as ?suffix
 REPLACE(STR(?uri),".*/","") as ?swp_suffix
 STR(SAMPLE(?label)) AS ?label
+STR(SAMPLE(?comment)) AS ?comment
+CONCAT(UCASE(SUBSTR(?p_suffix, 1, 1)), SUBSTR(?p_suffix, 2)) AS ?type
 {{
  ?uri a  hito:SoftwareProduct;
      ?p ?citation.
      ?p rdfs:subPropertyOf hito:citation.
 
-         ?citation rdfs:label ?label.
+  BIND(REPLACE(STR(?p),".*/","") AS ?p_suffix).
+
+ ?citation rdfs:label ?label.
+ OPTIONAL {{?citation rdfs:comment ?comment.}}
 }}''',
     "folder": "swp",
     "endpoint": "https://hitontology.eu/sparql",
     "table": "citation",
-    "fields": "(suffix,swp_suffix, label)",
+    "fields": "(suffix,swp_suffix, label,comment,type)",
     "arrayfields": []
 }
 
