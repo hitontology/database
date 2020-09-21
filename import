@@ -1,3 +1,4 @@
 #/bin/bash
+echo "WARNING: This will delete the whole HITO database and reimport it from scratch from the SPARQL endpoint."
 cat schema.sql catalogues.sql scripts/tmp/catalogue/classified.sql scripts/tmp/attribute/*.sql  scripts/tmp/swp/softwareproduct.sql scripts/tmp/swp/citation.sql scripts/tmp/relation/*.sql > /tmp/hito.sql
 psql -U postgres -d hito -h localhost < /tmp/hito.sql
