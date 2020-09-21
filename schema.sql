@@ -103,36 +103,37 @@ create table citation_has_classified(
 CREATE FUNCTION typeCheck() RETURNS trigger AS $typeCheck$
 DECLARE row record;
 BEGIN
+
   DROP TABLE IF EXISTS tmp;
   CREATE TEMPORARY TABLE tmp AS
   SELECT
-  citation.suffix AS citation_suffix,
-  classified.suffix AS classified_suffix,
-  citation.type AS citation_type,
-  catalogue.suffix AS catalogue_suffix,
-  catalogue.type AS catalogue_type
---  INTO
---  citation_suffix, classified_suffix, citation_type, catalogue_suffix, catalogue_type
+  citation_has_classified.citation_suffix AS citation_suffix,
+  citation_has_classified.classified_suffix AS classified_suffix
+--  citation.type AS citation_type,
+--  catalogue.suffix AS catalogue_suffix,
+--  catalogue.type AS catalogue_type
 
-FROM citation_has_classified
-  INNER JOIN citation
-    ON citation_has_classified.citation_suffix = citation.suffix
-  INNER JOIN classified
-    ON citation_has_classified.classified_suffix = classified.suffix
-  INNER JOIN catalogue
-    ON classified.catalogue_suffix = catalogue.suffix
-   WHERE citation_has_classified.citation_suffix = NEW.citation_suffix
-     AND citation_has_classified.classified_suffix = NEW.classified_suffix;
+  FROM citation_has_classified;
+--  INNER JOIN citation
+--    ON citation_has_classified.citation_suffix = citation.suffix
+--  INNER JOIN classified
+--    ON citation_has_classified.classified_suffix = classified.suffix
+--  INNER JOIN catalogue
+--    ON classified.catalogue_suffix = catalogue.suffix;
+--  WHERE citation.type = catalogue.type;
 
+--  RAISE NOTICE 'tmp %', tmp;
+--  RAISE NOTICE 'STATEEMENEETN';
   FOR row in SELECT * FROM tmp
 	LOOP
-        IF (tmp.citation_type != tmp.catalogue_type) THEN
+        RAISE NOTICE 'halloooo';
+	RAISE NOTICE 'row %', row;
+--        IF (tmp.citation_type != tmp.catalogue_type) THEN
 	RAISE EXCEPTION 'WRONG';
 --            RAISE EXCEPTION 'Citation % has type % but its classified % is in catalogue % with type %.', citation_suffix, citation_type, classified_suffix, catalogue_suffix, catalogue_type;
-	END IF;
         END LOOP;
 
-        RETURN NEW;
+   RETURN NULL;
 END;
 $typeCheck$ LANGUAGE plpgsql;
 
