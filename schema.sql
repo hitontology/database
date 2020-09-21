@@ -9,7 +9,7 @@ create table databasesystem(suffix VARCHAR(10) PRIMARY KEY, label VARCHAR(20) NO
 insert into databasesystem(suffix,label) values ('MySql','MySql'), ('PostgreSql','PostgreSql');
 
 --create table cataloguetype(suffix VARCHAR(19) PRIMARY KEY);
--- insert into table cataloguetype(suffix) values ('UserGroup'), ('ApplicationSystem'), ('Feature'), ('EnterpriseFunction'), ('OrganizationalUnit');  
+-- insert into table cataloguetype(suffix) values ('UserGroup'), ('ApplicationSystem'), ('Feature'), ('EnterpriseFunction'), ('OrganizationalUnit');
 create type cataloguetype as enum('UserGroup', 'ApplicationSystem', 'Feature', 'EnterpriseFunction', 'OrganizationalUnit');
 
 -- the main table
@@ -99,6 +99,45 @@ create table citation_has_classified(
 	classified_suffix character varying(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (citation_suffix, classified_suffix)
 );
+
+CREATE FUNCTION typeCheck() RETURNS trigger AS $typeCheck$
+DECLARE row record;
+BEGIN
+  DROP TABLE IF EXISTS tmp;
+  CREATE TEMPORARY TABLE tmp AS
+  SELECT
+  citation.suffix AS citation_suffix,
+  classified.suffix AS classified_suffix,
+  citation.type AS citation_type,
+  catalogue.suffix AS catalogue_suffix,
+  catalogue.type AS catalogue_type
+--  INTO
+--  citation_suffix, classified_suffix, citation_type, catalogue_suffix, catalogue_type
+
+FROM citation_has_classified
+  INNER JOIN citation
+    ON citation_has_classified.citation_suffix = citation.suffix
+  INNER JOIN classified
+    ON citation_has_classified.classified_suffix = classified.suffix
+  INNER JOIN catalogue
+    ON classified.catalogue_suffix = catalogue.suffix
+   WHERE citation_has_classified.citation_suffix = NEW.citation_suffix
+     AND citation_has_classified.classified_suffix = NEW.classified_suffix;
+
+  FOR row in SELECT * FROM tmp
+	LOOP
+        IF (tmp.citation_type != tmp.catalogue_type) THEN
+	RAISE EXCEPTION 'WRONG';
+--            RAISE EXCEPTION 'Citation % has type % but its classified % is in catalogue % with type %.', citation_suffix, citation_type, classified_suffix, catalogue_suffix, catalogue_type;
+	END IF;
+        END LOOP;
+
+        RETURN NEW;
+END;
+$typeCheck$ LANGUAGE plpgsql;
+
+CREATE TRIGGER typeCheck BEFORE INSERT OR UPDATE ON citation_has_classified FOR EACH ROW EXECUTE PROCEDURE typeCheck();
+
 -- ToDo: check if parent is Feature and child is Feature or function
 create table classified_has_child(
 	parent_suffix character varying(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -145,7 +184,7 @@ create table swp_has_databasesystem(
 	db_suffix character varying(10) NOT NULL REFERENCES databasesystem(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (swp_suffix, db_suffix)
 );
--- ToDo: how to avoid circular reference? It would be complicated and of high cost to implement sth like a recursive query-monster, that points out the paths and checks if something is there twice. 
+-- ToDo: how to avoid circular reference? It would be complicated and of high cost to implement sth like a recursive query-monster, that points out the paths and checks if something is there twice.
 -- I think the data are structured enough so we don't need this feature. For the stability of the db it has also no effect.
 create table swp_has_child(
 	parent_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
