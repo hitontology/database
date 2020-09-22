@@ -101,39 +101,21 @@ create table citation_has_classified(
 );
 
 CREATE FUNCTION typeCheck() RETURNS trigger AS $typeCheck$
-DECLARE row record;
+DECLARE citation_type cataloguetype;
+DECLARE classified_type cataloguetype;
+DECLARE catalogue_suffix catalogue.suffix%type;
 BEGIN
+  SELECT type INTO citation_type FROM citation WHERE suffix = NEW.citation_suffix;
 
-  DROP TABLE IF EXISTS tmp;
-  CREATE TEMPORARY TABLE tmp AS
-  SELECT
-  citation_has_classified.citation_suffix AS citation_suffix,
-  citation_has_classified.classified_suffix AS classified_suffix
---  citation.type AS citation_type,
---  catalogue.suffix AS catalogue_suffix,
---  catalogue.type AS catalogue_type
+  SELECT catalogue.suffix, catalogue.type INTO catalogue_suffix, classified_type
+  FROM classified INNER JOIN catalogue
+  ON classified.catalogue_suffix = catalogue.suffix;
 
-  FROM citation_has_classified;
---  INNER JOIN citation
---    ON citation_has_classified.citation_suffix = citation.suffix
---  INNER JOIN classified
---    ON citation_has_classified.classified_suffix = classified.suffix
---  INNER JOIN catalogue
---    ON classified.catalogue_suffix = catalogue.suffix;
---  WHERE citation.type = catalogue.type;
+  IF citation_type != classified_type THEN
+    RAISE EXCEPTION 'Citation % has type % but its classified % is in catalogue % with type %.', NEW.citation_suffix, citation_type, NEW.classified_suffix, catalogue_suffix, classified_type;
+  END IF;
 
---  RAISE NOTICE 'tmp %', tmp;
---  RAISE NOTICE 'STATEEMENEETN';
-  FOR row in SELECT * FROM tmp
-	LOOP
-        RAISE NOTICE 'halloooo';
-	RAISE NOTICE 'row %', row;
---        IF (tmp.citation_type != tmp.catalogue_type) THEN
-	RAISE EXCEPTION 'WRONG';
---            RAISE EXCEPTION 'Citation % has type % but its classified % is in catalogue % with type %.', citation_suffix, citation_type, classified_suffix, catalogue_suffix, catalogue_type;
-        END LOOP;
-
-   RETURN NULL;
+   RETURN NEW; -- result is used, since it is a row-level BEFORE trigger
 END;
 $typeCheck$ LANGUAGE plpgsql;
 
