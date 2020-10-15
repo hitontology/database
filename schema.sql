@@ -109,10 +109,11 @@ BEGIN
 
   SELECT catalogue.suffix, catalogue.type INTO catalogue_suffix, classified_type
   FROM classified INNER JOIN catalogue
-  ON classified.catalogue_suffix = catalogue.suffix;
+  ON classified.catalogue_suffix = catalogue.suffix
+  WHERE classified.suffix = NEW.classified_suffix;
 
   IF citation_type != classified_type THEN
-    RAISE EXCEPTION 'Citation % has type % but its classified % is in catalogue % with type %.', NEW.citation_suffix, citation_type, NEW.classified_suffix, catalogue_suffix, classified_type;
+    RAISE EXCEPTION 'Citation % has type % but it`s classified % is in catalogue % with type %.', NEW.citation_suffix, citation_type, NEW.classified_suffix, catalogue_suffix, classified_type;
   END IF;
 
    RETURN NEW; -- result is used, since it is a row-level BEFORE trigger
