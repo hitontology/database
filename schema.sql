@@ -190,11 +190,11 @@ BEGIN
   ON classified.catalogue_suffix = catalogue.suffix
   WHERE classified.suffix = NEW.function_suffix;
 
-  IF feature_type != "Feature" THEN
+  IF feature_type != 'Feature' THEN
     RAISE EXCEPTION 'Classified % has type % but it should be a feature in entry (%,%) of table feature_supports_function .', NEW.feature_suffix, feature_type, NEW.feature_suffix, NEW.function_suffix;
   END IF;
 
-  IF feature_type != "Function" THEN
+  IF function_type != 'EnterpriseFunction' THEN
     RAISE EXCEPTION 'Classified % has type % but it should be a function in entry (%,%) of table feature_supports_function .', NEW.function_suffix, function_type, NEW.feature_suffix, NEW.function_suffix;
   END IF;
 
