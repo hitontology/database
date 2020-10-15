@@ -22,7 +22,7 @@ Contains software products and related attributes, such as licenses
 
 2. Open tunnel via `ssh -fN hitotunnel`
  
-3. When finished, close tunnel via `ssh -S ~/.ssh/sockets/snik@139.18.158.56:22 -o exit hitotunnel`
+3. When finished, close tunnel via `ssh -S ~/.ssh/sockets/snik@139.18.158.56:22 -O exit hitotunnel`
 
 ## Usage
 ```
