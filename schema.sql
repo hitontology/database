@@ -167,6 +167,33 @@ create table swp_has_databasesystem(
 	db_suffix character varying(10) NOT NULL REFERENCES databasesystem(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (swp_suffix, db_suffix)
 );
+create table feature_supports_function(
+	feature_suffix character varying(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	function_suffix character varying(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	source VARCHAR(200),
+	PRIMARY KEY (feature_suffix, function_suffix)
+);
+
+CREATE FUNCTION featureFunctionCheck() RETURNS trigger AS $featureFunctionCheck$
+DECLARE feature_type cataloguetype;
+DECLARE function_type cataloguetype;
+BEGIN
+  SELECT type INTO feature_type FROM classified WHERE suffix = NEW.feature_suffix;
+  SELECT type INTO function_type FROM classified WHERE suffix = NEW.function_suffix;
+
+  IF feature_type != "Feature" THEN
+    RAISE EXCEPTION 'Classified % has type % but it should be a feature in entry (%,%) of table feature_supports_function .', NEW.feature_suffix, feature_type, NEW.feature_suffix, NEW.function_suffix;
+  END IF;
+
+  IF feature_type != "Function" THEN
+    RAISE EXCEPTION 'Classified % has type % but it should be a function in entry (%,%) of table feature_supports_function .', NEW.function_suffix, function_type, NEW.feature_suffix, NEW.function_suffix;
+  END IF;
+
+   RETURN NEW; -- result is used, since it is a row-level BEFORE trigger
+END;
+$featureFunctionCheck$ LANGUAGE plpgsql;
+CREATE TRIGGER featureFunctionCheck BEFORE INSERT OR UPDATE ON feature_supports_function FOR EACH ROW EXECUTE PROCEDURE featureFunctionCheck();
+
 -- ToDo: how to avoid circular reference? It would be complicated and of high cost to implement sth like a recursive query-monster, that points out the paths and checks if something is there twice.
 -- I think the data are structured enough so we don't need this feature. For the stability of the db it has also no effect.
 create table swp_has_child(
