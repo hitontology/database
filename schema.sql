@@ -179,8 +179,16 @@ CREATE FUNCTION featureFunctionCheck() RETURNS trigger AS $featureFunctionCheck$
 DECLARE feature_type cataloguetype;
 DECLARE function_type cataloguetype;
 BEGIN
-  SELECT type INTO feature_type FROM classified WHERE suffix = NEW.feature_suffix;
-  SELECT type INTO function_type FROM classified WHERE suffix = NEW.function_suffix;
+
+  SELECT catalogue.type INTO feature_type
+  FROM classified INNER JOIN catalogue
+  ON classified.catalogue_suffix = catalogue.suffix
+  WHERE classified.suffix = NEW.feature_suffix;
+
+  SELECT catalogue.type INTO function_type
+  FROM classified INNER JOIN catalogue
+  ON classified.catalogue_suffix = catalogue.suffix
+  WHERE classified.suffix = NEW.function_suffix;
 
   IF feature_type != "Feature" THEN
     RAISE EXCEPTION 'Classified % has type % but it should be a feature in entry (%,%) of table feature_supports_function .', NEW.feature_suffix, feature_type, NEW.feature_suffix, NEW.function_suffix;
