@@ -210,3 +210,8 @@ create table swp_has_child(
 	child_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (parent_suffix, child_suffix)
 );
+
+CREATE VIEW classified_type AS
+SELECT classified.suffix, catalogue.type
+FROM classified RIGHT JOIN catalogue
+ON classified.catalogue_suffix = catalogue.suffix;
