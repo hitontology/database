@@ -73,7 +73,7 @@ create table catalogue(
 create table classified(
 	suffix VARCHAR(200) PRIMARY KEY,
 	catalogue_suffix VARCHAR(200) NOT NULL REFERENCES catalogue(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
-	n VARCHAR(10),
+	n VARCHAR(20),
 	label VARCHAR(200) NOT NULL,
 	CHECK (label <> ''),
 	comment TEXT,
