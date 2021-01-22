@@ -25,4 +25,4 @@ INSERT INTO catalogue(suffix,label,type)VALUES
 ('SnomedEnvironmentOrganizationalUnitCatalogue','SNOMED CT Environment Client Feature Catalogue','OrganizationalUnit'),
 -- ('UnknownFunctionCatalogue','Unknown Enterprise Function Catalogue','EnterpriseFunction'),
 ('EhrSfmFeatureCatalogue','HL7 EHR-S FM Feature Catalogue','Feature'),
-('SnomedUserGroupCatalogue','SNOMED CT User Group Catalogue','UserGroup');
+('SnomedUserGroupCatalogue','SNOMED CT User Group Catalogue','UserGroup') ON CONFLICT DO NOTHING;
