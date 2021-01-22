@@ -24,4 +24,5 @@ INSERT INTO catalogue(suffix,label,type)VALUES
 -- ('UnknownUserGroupCatalogue','Unknown User Group Catalogue','UserGroup'),
 ('SnomedEnvironmentOrganizationalUnitCatalogue','SNOMED CT Environment Client Feature Catalogue','OrganizationalUnit'),
 -- ('UnknownFunctionCatalogue','Unknown Enterprise Function Catalogue','EnterpriseFunction'),
+('EhrSfmFeatureCatalogue','HL7 EHR-S FM Feature Catalogue','Feature'),
 ('SnomedUserGroupCatalogue','SNOMED CT User Group Catalogue','UserGroup');

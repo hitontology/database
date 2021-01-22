@@ -193,12 +193,28 @@ SELECT
 {suffix("?child")} AS ?child_suffix
 {{
  ?child ?p ?parent.
- ?p rdfs:subPropertyOf hito:subClassifiedOf. 
+ ?p rdfs:subPropertyOf hito:subClassifiedOf.
+ FILTER(?p != hito:supports)
 }}''',
     "folder": "relation",
     "endpoint": "https://hitontology.eu/sparql",
     "table": "classified_has_child",
     "fields": "(parent_suffix,child_suffix)",
+    "arrayfields": []
+}
+
+featureSupportsFunction = {
+    "query": f'''
+SELECT
+{suffix("?feature")} AS ?feature_suffix
+{suffix("?function")} AS ?function_suffix
+{{
+ ?feature hito:supports ?function.
+}}''',
+    "folder": "relation",
+    "endpoint": "https://hitontology.eu/sparql",
+    "table": "feature_supports_function",
+    "fields": "(feature_suffix,function_suffix)",
     "arrayfields": []
 }
 
@@ -233,5 +249,5 @@ relations = map(lambda d: {
 }
 , relationData)
 
-classes = [standard,language,license,programmingLanguage,operatingSystem,softwareProduct,classified,classifiedComponent,citation,citation_has_classified] + list(relations)
+classes = [standard,language,license,programmingLanguage,operatingSystem,softwareProduct,classified,classifiedComponent,featureSupportsFunction,citation,citation_has_classified] + list(relations)
 
