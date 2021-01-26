@@ -6,7 +6,7 @@ create table client(suffix VARCHAR(8) PRIMARY KEY, label VARCHAR(20) NOT NULL);
 insert into client(suffix,label) values ('Mobile','Mobile'), ('Native','Native'), ('WebBased','Web Based');
 
 create table databasesystem(suffix VARCHAR(10) PRIMARY KEY, label VARCHAR(20) NOT NULL);
-insert into databasesystem(suffix,label) values ('MySql','MySql'), ('PostgreSql','PostgreSql');
+insert into databasesystem(suffix,label) values ('MySql','MySQL'), ('PostgreSql','PostgreSQL'), ('IbmDb2','IBM DB2'), ('MariaDb','MariaDB'), ('MicrosoftSqlServer','Microsoft SQL Server'), ('MongoDb','MongoDB'), ('OracleDatabase','Oracle Database'), ('SapHana','SAP HANA'); 
 
 --create table cataloguetype(suffix VARCHAR(19) PRIMARY KEY);
 -- insert into table cataloguetype(suffix) values ('UserGroup'), ('ApplicationSystem'), ('Feature'), ('EnterpriseFunction'), ('OrganizationalUnit');
