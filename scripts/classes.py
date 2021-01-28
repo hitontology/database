@@ -66,6 +66,20 @@ programmingLanguage = {
     "arrayfields": []
 }
 
+programmingLibrary = {
+    "query": '''SELECT REPLACE(STR(?uri),"http://hitontology.eu/ontology/","") as ?suffix STR(SAMPLE(?label)) AS ?label
+{
+ ?uri a hito:ProgrammingLibrary ;
+      rdfs:label ?label.
+ FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+}''',
+    "folder": "attribute",
+    "endpoint": "https://hitontology.eu/sparql",
+    "table": "programminglibrary",
+    "fields": "(suffix, label)",
+    "arrayfields": []
+}
+
 operatingSystem = {
     "query": '''SELECT REPLACE(STR(?uri),"http://dbpedia.org/resource/","") as ?suffix STR(SAMPLE(?label)) AS ?label
 {
@@ -249,5 +263,5 @@ relations = map(lambda d: {
 }
 , relationData)
 
-classes = [standard,language,license,programmingLanguage,operatingSystem,softwareProduct,classified,classifiedComponent,featureSupportsFunction,citation,citation_has_classified] + list(relations)
+classes = [standard,language,license,programmingLanguage,programmingLibrary,operatingSystem,softwareProduct,classified,classifiedComponent,featureSupportsFunction,citation,citation_has_classified] + list(relations)
 

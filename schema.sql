@@ -32,7 +32,7 @@ create table softwareproduct(
 create table programminglibrary(
 	suffix VARCHAR(200) PRIMARY KEY,
 	label VARCHAR(200) NOT NULL,
-	uri VARCHAR(229) GENERATED ALWAYS AS ('http://dbpedia.org/resource/' || suffix) STORED
+	uri VARCHAR(229) GENERATED ALWAYS AS ('http://hitontology.eu/ontology/' || suffix) STORED
 );
 create table language(
 	suffix VARCHAR(200) PRIMARY KEY,
