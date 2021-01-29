@@ -5,7 +5,7 @@ CREATE SCHEMA public;
 create table client(suffix VARCHAR(8) PRIMARY KEY, label VARCHAR(20) NOT NULL);
 insert into client(suffix,label) values ('Mobile','Mobile'), ('Native','Native'), ('WebBased','Web Based');
 
-create table databasesystem(suffix VARCHAR(10) PRIMARY KEY, label VARCHAR(20) NOT NULL);
+create table databasesystem(suffix VARCHAR(20) PRIMARY KEY, label VARCHAR(20) NOT NULL);
 insert into databasesystem(suffix,label) values ('MySql','MySQL'), ('PostgreSql','PostgreSQL'), ('IbmDb2','IBM DB2'), ('MariaDb','MariaDB'), ('MicrosoftSqlServer','Microsoft SQL Server'), ('MongoDb','MongoDB'), ('OracleDatabase','Oracle Database'), ('SapHana','SAP HANA'); 
 
 --create table cataloguetype(suffix VARCHAR(19) PRIMARY KEY);
@@ -165,7 +165,7 @@ create table swp_has_client(
 );
 create table swp_has_databasesystem(
 	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
-	db_suffix character varying(10) NOT NULL REFERENCES databasesystem(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	db_suffix character varying(20) NOT NULL REFERENCES databasesystem(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (swp_suffix, db_suffix)
 );
 create table feature_supports_function(
