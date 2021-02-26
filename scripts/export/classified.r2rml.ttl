@@ -10,7 +10,7 @@
 <#ClassifiedMap>
     rr:logicalTable [ rr:tableName "classified" ];
     rr:subjectMap [
-        rr:template "{uri}";
+        rr:template "http://hitontology.eu/ontology/{suffix}";
         rr:class hito:Classified;
     ];
     rr:predicateObjectMap [
@@ -22,19 +22,25 @@
         rr:objectMap [ rr:column "comment" ];
     ];
     rr:predicateObjectMap [
-        rr:predicate skos:altLabel;
-        rr:objectMap [ rr:column "synonyms" ];
-    ];
-    rr:predicateObjectMap [
         rr:predicate hito:memberNr;
         rr:objectMap [ rr:column "n" ];
     ];
     rr:predicateObjectMap [
         rr:predicate dct:source;
         rr:objectMap [ rr:column "dct_source" ];
-    ];
-    rr:predicateObjectMap [
-        rr:predicate dce:source;
-        rr:objectMap [ rr:column "dce_sources" ];
+#    ];
+#    rr:predicateObjectMap [
+#        rr:predicate dce:source;
+#        rr:objectMap [ rr:column "dce_sources" ];
     ].
 
+<#ClassifiedMap2>
+ rr:logicalTable [ rr:sqlQuery """select suffix, unnest(synonyms) as synonym from classified""" ];
+ rr:subjectMap [
+        rr:template "http://hitontology.eu/ontology/{suffix}";
+        rr:class hito:Classified;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate skos:altLabel;
+        rr:objectMap [ rr:column "synonym"; rr:datatype xsd:string ];
+   ].
