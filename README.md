@@ -1,12 +1,6 @@
 # HITO Database
-Populate the HITO PostgreSQL database.
+Populate the HITO PostgreSQL database and export it back to RDF.
 Contains software products and related attributes, such as licenses
-
-## Requirements
-* bash
-* Python 3
-* psql
-* tunnel from the HITO database to localhost
 
 ## Tunnel Setup
 
@@ -24,14 +18,36 @@ Contains software products and related attributes, such as licenses
  
 3. When finished, close tunnel via `ssh -S ~/.ssh/sockets/snik@139.18.158.56:22 -O exit hitotunnel`
 
-## Usage
-```
-./transform
-./import
-```
+## Import
+
+### Requirements
+* bash
+* Python 3
+* psql
+* tunnel from the HITO database to localhost
+
+### Usage
+
+    ./transform
+    ./import
+
 **Warning**
 `./import` *deletes the complete database* without confirmation and replaces it with the new data!
 
-## SPARQL Endpoint Sources
+### SPARQL Endpoint Sources
 * [HITO](https://hitontology.eu/sparql) including the [Software Ontology](https://www.ebi.ac.uk/ols/ontologies/swo/terms?iri=http://www.ebi.ac.uk/swo/).
 * [DBpedia](https://dbpedia.org/sparql)
+
+## Export
+### Requirements
+* bash
+* [Ontop](https://ontop-vkg.org/guide/cli.html) with the [PostgreSQL JDBC driver](https://jdbc.postgresql.org/)
+* tunnel from the HITO database to localhost
+
+### Setup
+
+Copy `scripts/export/hito.properties.dist` to `scripts/export/hito.properties` and add the database password.
+
+### Usage
+    ./export
+
