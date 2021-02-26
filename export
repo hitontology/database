@@ -3,4 +3,5 @@ echo "This will export parts of the HITO Database as RDF but it is not finished 
 ontop materialize \
  -m scripts/export/classified.r2rml.ttl \
  -o export.ttl \
+ -f turtle \
  -p scripts/export/hito.properties
