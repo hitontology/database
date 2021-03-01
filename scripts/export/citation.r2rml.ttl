@@ -12,7 +12,7 @@
     rr:subjectMap [
         # using just "{suffix}" does not work correctly in OnTop, even with @base and empty @prefix set
         rr:template "http://hitontology.eu/ontology/{suffix}";
-        rr:class hito:Citation;
+    #    rr:class hito:Citation;
     ];
     rr:predicateObjectMap [
         rr:predicate rdfs:label;
@@ -21,6 +21,10 @@
     rr:predicateObjectMap [
         rr:predicate rdfs:comment;
         rr:objectMap [ rr:column "comment" ; rr:language "en" ];
+    ];
+    rr:predicateObjectMap [
+        rr:predicate rdf:type;
+        rr:objectMap [ rr:template "http://hitontology.eu/ontology/{type}Citation" ];
 #   ];
 #   rr:predicateObjectMap [
 #        rr:predicate hito:enterpriseFunction;
