@@ -215,3 +215,17 @@ CREATE VIEW classified_type AS
 SELECT classified.suffix, catalogue.type
 FROM classified RIGHT JOIN catalogue
 ON classified.catalogue_suffix = catalogue.suffix;
+
+CREATE VIEW citation_has_classified_type AS
+
+SELECT citation_has_classified.citation_suffix,
+       citation_has_classified.classified_suffix,
+       citation.type,
+
+       'http://hitontology.eu/ontology/' ||
+       LOWER(SUBSTRING(CAST(citation.type AS varchar) FOR 1)) ||
+       SUBSTRING(CAST(citation.type AS varchar)FROM 2) AS property
+
+FROM citation INNER JOIN citation_has_classified
+ON citation.suffix = citation_has_classified.citation_suffix;
+
