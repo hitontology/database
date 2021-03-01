@@ -1,7 +1,12 @@
 #/bin/bash
 echo "This will export parts of the HITO Database as RDF but it is not finished yet."
 ontop materialize \
- -m scripts/export/classified.r2rml.ttl \
- -o export.ttl \
+ -m scripts/export/citation.r2rml.ttl \
+ -o export.ontop.ttl \
  -f turtle \
  -p scripts/export/hito.properties
+
+cat scripts/export/prefix.ttl export.ontop.ttl > tmp.ttl
+rapper -i turtle -o turtle tmp.ttl > export.ttl
+rm tmp.ttl
+rm export.ontop.ttl

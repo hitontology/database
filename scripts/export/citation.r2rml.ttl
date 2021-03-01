@@ -1,0 +1,50 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix hito: <http://hitontology.eu/ontology/>.
+@prefix dcterms: <http://purl.org/dc/terms/>.
+@prefix dce: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix bb: <http://www.snik.eu/ontology/bb/>.
+
+<#CitationMap>
+    rr:logicalTable [ rr:tableName "citation" ];
+    rr:subjectMap [
+        # using just "{suffix}" does not work correctly in OnTop, even with @base and empty @prefix set
+        rr:template "http://hitontology.eu/ontology/{suffix}";
+        rr:class hito:Citation;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate rdfs:label;
+        rr:objectMap [ rr:column "label"; rr:language "en" ];
+    ];
+    rr:predicateObjectMap [
+        rr:predicate rdfs:comment;
+        rr:objectMap [ rr:column "comment" ; rr:language "en" ];
+#   ];
+#   rr:predicateObjectMap [
+#        rr:predicate hito:enterpriseFunction;
+#        rr:objectMap [ rr:column "swp_suffix" ];
+#   ];
+#   rr:predicateObjectMap [
+#        rr:predicate dce:source;
+#        rr:objectMap [ rr:column "dce_sources" ];
+    ].
+
+<#SoftwareProductMap>
+    rr:logicalTable [ rr:tableName "softwareproduct" ];
+    rr:subjectMap [
+        rr:template "http://hitontology.eu/ontology/{suffix}";
+        # is defined elsewhere so no class here
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:enterpriseFunction;
+        rr:objectMap [
+            rr:parentTriplesMap <#CitationMap>;
+            rr:joinCondition [
+                rr:child "suffix";
+                rr:parent "swp_suffix";
+            ];
+        ];
+    ].
+
