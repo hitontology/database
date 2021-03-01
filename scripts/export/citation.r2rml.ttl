@@ -12,6 +12,7 @@
     rr:subjectMap [
         # using just "{suffix}" does not work correctly in OnTop, even with @base and empty @prefix set
         rr:template "http://hitontology.eu/ontology/{suffix}";
+# uri, termType
     #    rr:class hito:Citation;
     ];
     rr:predicateObjectMap [
@@ -25,14 +26,18 @@
     rr:predicateObjectMap [
         rr:predicate rdf:type;
         rr:objectMap [ rr:template "http://hitontology.eu/ontology/{type}Citation" ];
-#   ];
-#   rr:predicateObjectMap [
-#        rr:predicate hito:enterpriseFunction;
-#        rr:objectMap [ rr:column "swp_suffix" ];
-#   ];
-#   rr:predicateObjectMap [
-#        rr:predicate dce:source;
-#        rr:objectMap [ rr:column "dce_sources" ];
+    ];
+    rr:predicateObjectMap [
+        # Fehler bei Ontop: findet {type} aus Tabelle "citation" nicht
+        #rr:predicateMap [rr:template "http://hitontology.eu/ontology/{type}Citation"]; 
+        rr:predicate hito:example123; 
+        rr:objectMap [
+            rr:parentTriplesMap <#CitationHasClassifiedMap>;
+            rr:joinCondition [
+                rr:child "suffix";
+                rr:parent "citation_suffix";
+            ];
+        ];
     ].
 
 <#SoftwareProductMap>
@@ -51,4 +56,12 @@
             ];
         ];
     ].
+
+<#CitationHasClassifiedMap>
+    rr:logicalTable [ rr:tableName "citation_has_classified" ];
+    rr:subjectMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}"; ].
+   # rr:predicateObjectMap [
+   #     rr:predicateMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}Citation" ];
+   #     rr:objectMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}Citation" ];
+   # ].
 

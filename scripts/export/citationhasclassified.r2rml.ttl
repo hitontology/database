@@ -1,0 +1,17 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix hito: <http://hitontology.eu/ontology/>.
+@prefix dcterms: <http://purl.org/dc/terms/>.
+@prefix dce: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix bb: <http://www.snik.eu/ontology/bb/>.
+
+<#CitationHasClassifiedMap>
+    rr:logicalTable [ rr:tableName "citation_has_classified_type" ];
+    rr:subjectMap [ rr:template "http://hitontology.eu/ontology/{citation_suffix}"; ];
+    rr:predicateObjectMap [
+        rr:predicateMap [rr:column "property" ];
+        rr:objectMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}"; ]
+    ].
+
