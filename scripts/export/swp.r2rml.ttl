@@ -30,7 +30,7 @@
         rr:objectMap [ rr:column "homepage" ; rr:termType rr:IRI ];
     ].
 
-<#SoftwareProductHasChildMap>
+<#SwpHasChildMap>
     rr:logicalTable [ rr:tableName "swp_has_child" ];
     rr:subjectMap [
         rr:template "http://hitontology.eu/ontology/{parent_suffix}";
@@ -39,5 +39,16 @@
     rr:predicateObjectMap [
         rr:predicate hito:softwareProductComponent;
         rr:objectMap [ rr:template "http://hitontology.eu/ontology/{child_suffix}"; rr:termType rr:IRI ];
+    ].
+
+<#SwpHasClientMap>
+    rr:logicalTable [ rr:tableName "swp_has_client" ];
+    rr:subjectMap [
+        rr:template "http://hitontology.eu/ontology/{swp_suffix}";
+        rr:class hito:SoftwareProduct;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:client;
+        rr:objectMap [ rr:template "http://hitontology.eu/ontology/{client_suffix}"; rr:termType rr:IRI ];
     ].
 
