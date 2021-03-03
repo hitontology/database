@@ -52,3 +52,80 @@
         rr:objectMap [ rr:template "http://hitontology.eu/ontology/{client_suffix}"; rr:termType rr:IRI ];
     ].
 
+<#SwpHasDatabasesystemMap>
+    rr:logicalTable [ rr:tableName "swp_has_databasesystem" ];
+    rr:subjectMap [
+        rr:template "http://hitontology.eu/ontology/{swp_suffix}";
+        rr:class hito:SoftwareProduct;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:databaseSystem;
+        rr:objectMap [ rr:template "http://hitontology.eu/ontology/{db_suffix}"; rr:termType rr:IRI ];
+    ].
+
+<#SwpHasInteroperabilityStandardMap>
+    rr:logicalTable [ rr:tableName "swp_has_interoperabilitystandard" ];
+    rr:subjectMap [
+        rr:template "http://hitontology.eu/ontology/{swp_suffix}";
+        rr:class hito:SoftwareProduct;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:interoperability;
+        rr:objectMap [ rr:template "http://hitontology.eu/ontology/{io_suffix}"; rr:termType rr:IRI ];
+    ].
+
+<#SwpHasLanguageMap>
+    rr:logicalTable [ rr:tableName "swp_has_language" ];
+    rr:subjectMap [
+        rr:template "http://hitontology.eu/ontology/{swp_suffix}";
+        rr:class hito:SoftwareProduct;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:language;
+        rr:objectMap [ rr:template "http://dbpedia.org/resource/{lang_suffix}"; rr:termType rr:IRI ];
+    ].
+
+<#SwpHasLicenseMap>
+    rr:logicalTable [ rr:tableName "swp_has_license" ];
+    rr:subjectMap [
+        rr:template "http://hitontology.eu/ontology/{swp_suffix}";
+        rr:class hito:SoftwareProduct;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:license;
+        rr:objectMap [ rr:template "http://www.ebi.ac.uk/swo/license/{license_suffix}"; rr:termType rr:IRI ];
+    ].
+
+<#SwpHasOperatingSystemMap>
+    rr:logicalTable [ rr:tableName "swp_has_operatingsystem" ];
+    rr:subjectMap [
+        rr:template "http://hitontology.eu/ontology/{swp_suffix}";
+        rr:class hito:SoftwareProduct;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:operatingSystem;
+        rr:objectMap [ rr:template "http://dbpedia.org/resource/{os_suffix}"; rr:termType rr:IRI ];
+    ].
+
+<#SwpHasProgrammingLanguageMap>
+    rr:logicalTable [ rr:tableName "swp_has_programminglanguage" ];
+    rr:subjectMap [
+        rr:template "http://hitontology.eu/ontology/{swp_suffix}";
+        rr:class hito:SoftwareProduct;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:programmingLanguage;
+        rr:objectMap [ rr:template "http://dbpedia.org/resource/{plang_suffix}"; rr:termType rr:IRI ];
+    ].
+
+<#SwpHasProgrammingLibraryMap>
+    rr:logicalTable [ rr:tableName "swp_has_programminglibrary" ];
+    rr:subjectMap [
+        rr:template "http://hitontology.eu/ontology/{swp_suffix}";
+        rr:class hito:SoftwareProduct;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:programmingLibrary;
+        rr:objectMap [ rr:template "http://hitontology.eu/ontology/{lib_suffix}"; rr:termType rr:IRI ];
+    ].
+
