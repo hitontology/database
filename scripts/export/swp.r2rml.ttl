@@ -7,7 +7,7 @@
 @prefix dct: <http://purl.org/dc/terms/>.
 @prefix bb: <http://www.snik.eu/ontology/bb/>.
 
-<#CitationMap>
+<#SoftwareProductMap>
     rr:logicalTable [ rr:tableName "softwareproduct" ];
     rr:subjectMap [
         rr:column "uri";
@@ -28,5 +28,16 @@
     rr:predicateObjectMap [
         rr:predicate hito:homepage;
         rr:objectMap [ rr:column "homepage" ; rr:termType rr:IRI ];
+    ].
+
+<#SoftwareProductHasChildMap>
+    rr:logicalTable [ rr:tableName "swp_has_child" ];
+    rr:subjectMap [
+        rr:template "http://hitontology.eu/ontology/{parent_suffix}";
+        rr:class hito:SoftwareProduct;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:softwareProductComponent;
+        rr:objectMap [ rr:template "http://hitontology.eu/ontology/{child_suffix}"; rr:termType rr:IRI ];
     ].
 
