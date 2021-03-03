@@ -1,0 +1,32 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix hito: <http://hitontology.eu/ontology/>.
+@prefix dcterms: <http://purl.org/dc/terms/>.
+@prefix dce: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix bb: <http://www.snik.eu/ontology/bb/>.
+
+<#CitationMap>
+    rr:logicalTable [ rr:tableName "softwareproduct" ];
+    rr:subjectMap [
+        rr:column "uri";
+        rr:class hito:SoftwareProduct;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate rdfs:label;
+        rr:objectMap [ rr:column "label"; rr:language "en" ];
+    ];
+    rr:predicateObjectMap [
+        rr:predicate rdfs:comment;
+        rr:objectMap [ rr:column "comment" ; rr:language "en" ];
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:repository;
+        rr:objectMap [ rr:column "coderepository" ; rr:termType rr:IRI ];
+    ];
+    rr:predicateObjectMap [
+        rr:predicate hito:homepage;
+        rr:objectMap [ rr:column "homepage" ; rr:termType rr:IRI ];
+    ].
+
