@@ -9,12 +9,12 @@ import shutil
 import re
 
 ENDPOINT = "https://hitontology.eu/sparql/"
-CLASSES = ["SoftwareProduct"]
+CLASSES = ["[rdfs:subClassOf hito:Citation]"]
 
 def query(clazz):
     return """CONSTRUCT {?s ?p ?o.}
     {
-     ?s a hito:""" + clazz + """.
+     ?s a """ + clazz + """.
      ?s ?p ?o.
     }"""
 
@@ -28,6 +28,8 @@ for clazz in CLASSES:
     if(resp.status_code!=200):
         print("Error with SPARQL query :\n"+resp.text)
     text = resp.text
+    text = re.sub(r'[ \t]+',' ',text)
+    text = "\n".join(sorted(text.split("\n")))
     # todo: normalize whitespace to one space
     print(text)
 
