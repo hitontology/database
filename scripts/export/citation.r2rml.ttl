@@ -9,12 +9,7 @@
 
 <#CitationMap>
     rr:logicalTable [ rr:tableName "citation" ];
-    rr:subjectMap [
-        # using just "{suffix}" does not work correctly in OnTop, even with @base and empty @prefix set
-        rr:template "http://hitontology.eu/ontology/{suffix}";
-# uri, termType
-    #    rr:class hito:Citation;
-    ];
+    rr:subjectMap [ rr:column "uri"; ];
     rr:predicateObjectMap [
         rr:predicate rdfs:label;
         rr:objectMap [ rr:column "label"; rr:language "en" ];
@@ -26,42 +21,21 @@
     rr:predicateObjectMap [
         rr:predicate rdf:type;
         rr:objectMap [ rr:template "http://hitontology.eu/ontology/{type}Citation" ];
-    ];
-    rr:predicateObjectMap [
-        # Fehler bei Ontop: findet {type} aus Tabelle "citation" nicht
-        #rr:predicateMap [rr:template "http://hitontology.eu/ontology/{type}Citation"]; 
-        rr:predicate hito:example123; 
-        rr:objectMap [
-            rr:parentTriplesMap <#CitationHasClassifiedMap>;
-            rr:joinCondition [
-                rr:child "suffix";
-                rr:parent "citation_suffix";
-            ];
-        ];
     ].
 
 <#SoftwareProductMap>
-    rr:logicalTable [ rr:tableName "softwareproduct" ];
-    rr:subjectMap [
-        rr:template "http://hitontology.eu/ontology/{suffix}";
-        # is defined elsewhere so no class here
-    ];
+    rr:logicalTable [ rr:tableName "swp_citation_rdf" ];
+    rr:subjectMap [ rr:column "subject"; ];
     rr:predicateObjectMap [
-        rr:predicate hito:enterpriseFunction;
-        rr:objectMap [
-            rr:parentTriplesMap <#CitationMap>;
-            rr:joinCondition [
-                rr:child "suffix";
-                rr:parent "swp_suffix";
-            ];
-        ];
+        rr:predicateMap [ rr:column "predicate"; rr:termType rr:IRI ];
+        rr:objectMap [ rr:column "object"; rr:termType rr:IRI ];
     ].
 
-<#CitationHasClassifiedMap>
-    rr:logicalTable [ rr:tableName "citation_has_classified" ];
-    rr:subjectMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}"; ].
-   # rr:predicateObjectMap [
-   #     rr:predicateMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}Citation" ];
-   #     rr:objectMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}Citation" ];
-   # ].
+#<#CitationHasClassifiedMap>
+#    rr:logicalTable [ rr:tableName "citation_has_classified" ];
+#    rr:subjectMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}"; ].
+#   # rr:predicateObjectMap [
+#   #     rr:predicateMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}Citation" ];
+#   #     rr:objectMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}Citation" ];
+#   # ].
 
