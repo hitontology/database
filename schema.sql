@@ -223,17 +223,24 @@ SELECT citation_has_classified.citation_suffix,
 
        'http://hitontology.eu/ontology/' ||
        LOWER(SUBSTRING(CAST(citation.type AS varchar) FOR 1)) ||
-       SUBSTRING(CAST(citation.type AS varchar)FROM 2) AS property
-
-FROM citation INNER JOIN citation_has_classified
-ON citation.suffix = citation_has_classified.citation_suffix;
+       SUBSTRING(CAST(citation.type AS varchar) FROM 2) AS property
+FROM   citation INNER JOIN citation_has_classified
+ON     citation.suffix = citation_has_classified.citation_suffix;
 
 CREATE VIEW swp_citation_rdf AS
 SELECT 'http://hitontology.eu/ontology/' || swp_suffix AS subject,
        'http://hitontology.eu/ontology/' ||
        LOWER(SUBSTRING(CAST(citation.type AS varchar) FOR 1)) ||
-       SUBSTRING(CAST(citation.type AS varchar) FROM 2) AS property,
+       SUBSTRING(CAST(citation.type AS varchar) FROM 2) AS predicate,
        uri AS object
+FROM   citation;
 
-FROM citation;
+CREATE VIEW citation_classified_rdf AS
+SELECT citation.uri AS subject,
+       'http://hitontology.eu/ontology/' ||
+       LOWER(SUBSTRING(CAST(citation.type AS varchar) FOR 1)) ||
+       SUBSTRING(CAST(citation.type AS varchar) FROM 2) AS predicate,
+       'http://hitontology.eu/ontology/' || citation_has_classified.classified_suffix AS object                                       
+FROM   citation INNER JOIN citation_has_classified 
+ON     citation.suffix = citation_has_classified.citation_suffix;
 
