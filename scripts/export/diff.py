@@ -9,15 +9,6 @@ import shutil
 import re
 
 ENDPOINT = "https://hitontology.eu/sparql/"
-CLASSES = ["[rdfs:subClassOf hito:Citation]"]
-
-def query(clazz):
-    return """CONSTRUCT {?s ?p ?o.}
-    {
-     ?x a """ + clazz + """.
-     ?s ?p ?o.
-     FILTER(?s=?x OR ?o=?x)
-    }"""
 
 QUERIES = [
     """CONSTRUCT {?s ?p ?o.}
@@ -25,6 +16,7 @@ QUERIES = [
      ?x a [rdfs:subClassOf hito:Citation].
      [a hito:SoftwareProduct] ?y ?x. # related to a software product, not a study citation
      ?s ?p ?o.
+     MINUS {?s a [rdfs:subClassOf hito:Study].}
      FILTER(?s=?x OR ?o=?x)
     }"""
     ]
