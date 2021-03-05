@@ -31,11 +31,11 @@
         rr:objectMap [ rr:column "object"; rr:termType rr:IRI ];
     ].
 
-#<#CitationHasClassifiedMap>
-#    rr:logicalTable [ rr:tableName "citation_has_classified" ];
-#    rr:subjectMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}"; ].
-#   # rr:predicateObjectMap [
-#   #     rr:predicateMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}Citation" ];
-#   #     rr:objectMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}Citation" ];
-#   # ].
+<#CitationHasClassifiedMap>
+    rr:logicalTable [ rr:tableName "citation_classified_rdf" ];
+    rr:subjectMap [ rr:column "subject"; ];
+    rr:predicateObjectMap [
+        rr:predicateMap [ rr:column "predicate"; rr:termType rr:IRI ];
+        rr:objectMap [ rr:column "object"; rr:termType rr:IRI ];
+    ].
 
