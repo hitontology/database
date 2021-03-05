@@ -14,8 +14,9 @@ CLASSES = ["[rdfs:subClassOf hito:Citation]"]
 def query(clazz):
     return """CONSTRUCT {?s ?p ?o.}
     {
-     ?s a """ + clazz + """.
+     ?x a """ + clazz + """.
      ?s ?p ?o.
+     FILTER(?s=?x OR ?o=?x)
     }"""
 
 outputBase = "tmp/"
