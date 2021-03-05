@@ -239,7 +239,8 @@ CREATE VIEW citation_classified_rdf AS
 SELECT citation.uri AS subject,
        'http://hitontology.eu/ontology/' ||
        LOWER(SUBSTRING(CAST(citation.type AS varchar) FOR 1)) ||
-       SUBSTRING(CAST(citation.type AS varchar) FROM 2) AS predicate,
+       SUBSTRING(CAST(citation.type AS varchar) FROM 2) ||
+       'Classified' AS predicate,
        'http://hitontology.eu/ontology/' || citation_has_classified.classified_suffix AS object                                       
 FROM   citation INNER JOIN citation_has_classified 
 ON     citation.suffix = citation_has_classified.citation_suffix;
