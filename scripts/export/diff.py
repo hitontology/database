@@ -19,11 +19,21 @@ def query(clazz):
      FILTER(?s=?x OR ?o=?x)
     }"""
 
+QUERIES = [
+    """CONSTRUCT {?s ?p ?o.}
+    {
+     ?x a [rdfs:subClassOf hito:Citation].
+     [a hito:SoftwareProduct] ?y ?x. # related to a software product, not a study citation
+     ?s ?p ?o.
+     FILTER(?s=?x OR ?o=?x)
+    }"""
+    ]
+
 outputBase = "tmp/"
 if os.path.exists(outputBase):
     shutil.rmtree(outputBase)
-for clazz in CLASSES:
-    q = query(clazz)
+for q in QUERIES: 
+    #q = query(clazz)
     parameters = {"query": q, "format": "text/plain"}
     resp = requests.get(ENDPOINT,params=parameters)
     if(resp.status_code!=200):
