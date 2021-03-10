@@ -1,1 +1,1 @@
-rapper -i turtle -o ntriples $@ | LC_COLLATE=C sort -u
+rapper -i turtle -o ntriples $@ | sort -u
