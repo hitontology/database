@@ -222,7 +222,7 @@ SELECT
 {suffix("?feature")} AS ?feature_suffix
 {suffix("?function")} AS ?function_suffix
 {{
- ?feature hito:supports ?function.
+ ?feature hito:supportsFunction ?function.
 }}''',
     "folder": "relation",
     "endpoint": "https://hitontology.eu/sparql",
