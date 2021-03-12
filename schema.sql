@@ -245,3 +245,14 @@ SELECT citation.uri AS subject,
 FROM   citation INNER JOIN citation_has_classified 
 ON     citation.suffix = citation_has_classified.citation_suffix;
 
+
+CREATE VIEW classified_has_child_type AS
+SELECT
+child.suffix as child_suffix,
+child.type AS child_type,
+parent.suffix as parent_suffix,
+parent.type AS parent_type
+FROM classified_has_child
+JOIN classified_type child ON classified_has_child.child_suffix=child.suffix
+JOIN classified_type parent ON classified_has_child.parent_suffix=parent.suffix
+
