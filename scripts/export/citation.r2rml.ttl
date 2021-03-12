@@ -39,3 +39,11 @@
         rr:objectMap [ rr:column "object"; rr:termType rr:IRI ];
     ].
 
+<#FeatureSupportsFunctionMap>
+    rr:logicalTable [ rr:tableName "feature_supports_function" ];
+    rr:subjectMap [ rr:template "http://hitontology.eu/ontology/{feature_suffix}"; ];
+    rr:predicateObjectMap [
+        rr:predicate hito:supportsFunction;
+        rr:objectMap [ rr:template "http://hitontology.eu/ontology/{function_suffix}"; rr:termType rr:IRI ];
+    ].
+
