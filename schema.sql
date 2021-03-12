@@ -169,33 +169,29 @@ create table swp_has_databasesystem(
 	PRIMARY KEY (swp_suffix, db_suffix)
 );
 create table feature_supports_function(
-	feature_suffix character varying(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
-	function_suffix character varying(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	feature_suffix character varying(200) NOT NULL REFERENCES citation(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	function_suffix character varying(200) NOT NULL REFERENCES citation(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	source VARCHAR(200),
 	PRIMARY KEY (feature_suffix, function_suffix)
 );
 
+DROP FUNCTION IF EXISTS featureFunctionCheck;
 CREATE FUNCTION featureFunctionCheck() RETURNS trigger AS $featureFunctionCheck$
-DECLARE feature_type cataloguetype;
-DECLARE function_type cataloguetype;
 BEGIN
 
-  SELECT catalogue.type INTO feature_type
-  FROM classified INNER JOIN catalogue
-  ON classified.catalogue_suffix = catalogue.suffix
-  WHERE classified.suffix = NEW.feature_suffix;
-
-  SELECT catalogue.type INTO function_type
-  FROM classified INNER JOIN catalogue
-  ON classified.catalogue_suffix = catalogue.suffix
-  WHERE classified.suffix = NEW.function_suffix;
+  SELECT
+  feature.type AS feature_type,
+  function.type AS function_type 
+  FROM feature_supports_function
+  JOIN citation feature ON feature.suffix=feature_supports_function.feature_suffix
+  JOIN citation function ON function.suffix=feature_supports_function.function_suffix;
 
   IF feature_type != 'Feature' THEN
-    RAISE EXCEPTION 'Classified % has type % but it should be a feature in entry (%,%) of table feature_supports_function .', NEW.feature_suffix, feature_type, NEW.feature_suffix, NEW.function_suffix;
+    RAISE EXCEPTION 'Citation % has type % but it should be a feature in entry (%,%) of table feature_supports_function .', NEW.feature_suffix, feature_type, NEW.feature_suffix, NEW.function_suffix;
   END IF;
 
   IF function_type != 'EnterpriseFunction' THEN
-    RAISE EXCEPTION 'Classified % has type % but it should be a function in entry (%,%) of table feature_supports_function .', NEW.function_suffix, function_type, NEW.feature_suffix, NEW.function_suffix;
+    RAISE EXCEPTION 'Citation % has type % but it should be a function in entry (%,%) of table feature_supports_function .', NEW.function_suffix, function_type, NEW.feature_suffix, NEW.function_suffix;
   END IF;
 
    RETURN NEW; -- result is used, since it is a row-level BEFORE trigger
