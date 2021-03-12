@@ -175,13 +175,14 @@ create table feature_supports_function(
 	PRIMARY KEY (feature_suffix, function_suffix)
 );
 
-DROP FUNCTION IF EXISTS featureFunctionCheck;
+DROP FUNCTION IF EXISTS featureFunctionCheck CASCADE;
 CREATE FUNCTION featureFunctionCheck() RETURNS trigger AS $featureFunctionCheck$
+DECLARE feature_type cataloguetype;
+DECLARE function_type cataloguetype;
 BEGIN
 
   SELECT
-  feature.type AS feature_type,
-  function.type AS function_type 
+  feature.type, function.type INTO feature_type, function_type
   FROM feature_supports_function
   JOIN citation feature ON feature.suffix=feature_supports_function.feature_suffix
   JOIN citation function ON function.suffix=feature_supports_function.function_suffix;
@@ -198,6 +199,7 @@ BEGIN
 END;
 $featureFunctionCheck$ LANGUAGE plpgsql;
 CREATE TRIGGER featureFunctionCheck BEFORE INSERT OR UPDATE ON feature_supports_function FOR EACH ROW EXECUTE PROCEDURE featureFunctionCheck();
+
 
 -- ToDo: how to avoid circular reference? It would be complicated and of high cost to implement sth like a recursive query-monster, that points out the paths and checks if something is there twice.
 -- I think the data are structured enough so we don't need this feature. For the stability of the db it has also no effect.
