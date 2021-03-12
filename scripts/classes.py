@@ -208,7 +208,6 @@ SELECT
 {{
  ?child ?p ?parent.
  ?p rdfs:subPropertyOf hito:subClassifiedOf.
- FILTER(?p != hito:supports)
 }}''',
     "folder": "relation",
     "endpoint": "https://hitontology.eu/sparql",
