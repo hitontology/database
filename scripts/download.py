@@ -9,12 +9,12 @@ import shutil
 from classes import classes
 
 def escape(s):
-    return "E'"+s.replace("'","\\'")+"'" # escape single quotes, add quotes for SQL
+    return "E'"+s.replace("'","''")+"'" # escape single quotes, add quotes for SQL
 
 def valueMap(value,isArray):
     if(isArray):
         values = filter(None,value.split("|")) # remove empty strings on empty results
-        return "'{" + ",".join(map(lambda v: '"'+v+'"', values))  + "}'"
+        return "'{" + ",".join(map(lambda v: '"'+v.replace("'","''")+'"', values))  + "}'"
     if(value=='' or value.startswith('Unknown')):
         return 'NULL'
     return escape(value)
