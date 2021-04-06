@@ -1,3 +1,3 @@
 echo "only in endpoint, only in database, in both files" 
-comm  citation.sparql.nt export.nt  --total  | tail -1
+comm  tmp/sparql.nt ../export/output/export.nt  --total  | tail -1
 
