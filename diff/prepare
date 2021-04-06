@@ -1,0 +1,5 @@
+mkdir -p tmp
+python sparqldump.py | sort > tmp/sparql.nt
+cd ../export
+./export
+cd ../diff

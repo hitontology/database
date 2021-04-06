@@ -1,3 +1,4 @@
+# Partial SPARQL Dump
 # Download classes from the HITO SPARQL endpoint
 # Not using the CSV2RDF tables because some products are not there but included in the base hito.ttl file.
 # Those need to be removed from hito.ttl afterwards.
@@ -21,9 +22,6 @@ QUERIES = [
     }"""
     ]
 
-outputBase = "tmp/"
-if os.path.exists(outputBase):
-    shutil.rmtree(outputBase)
 for q in QUERIES: 
     #q = query(clazz)
     parameters = {"query": q, "format": "text/plain"}
