@@ -1,0 +1,3 @@
+#/bin/bash
+echo "Backing up the HITO Database from the SPARQL endpoint. Database needs to be on localhost or tunnel enabled."
+pg_dump -U postgres hito -h localhost | gzip > hito-`date +%Y-%m-%dT%H-%M`.sql.gz

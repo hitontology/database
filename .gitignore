@@ -1,4 +1,4 @@
 scripts/tmp
 scripts/export/hito.properties
 log
-dump
+*.sql.gz
