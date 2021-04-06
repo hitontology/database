@@ -19,6 +19,16 @@ Contains software products and related attributes, such as licenses
 3. When finished, close tunnel via `ssh -S ~/.ssh/sockets/snik@139.18.158.56:22 -O exit hitotunnel`
 
 ## Import
+Import data from the Virtuoso SPARQL endpoint into the PostgreSQL database in two steps:
+
+1. `./download`
+2. `./import`
+
+The `download` script converts data from the SPARQL endpoint to .SQL files.
+The `import` script executes the SQL statements within those .SQL files on the HITO database.
+
+**Warning**
+`./import` *deletes the complete database* without confirmation and replaces it with the new data!
 
 ### Requirements
 * bash
@@ -26,19 +36,16 @@ Contains software products and related attributes, such as licenses
 * psql
 * tunnel from the HITO database to localhost
 
-### Usage
-
-    ./transform
-    ./import
-
-**Warning**
-`./import` *deletes the complete database* without confirmation and replaces it with the new data!
-
 ### SPARQL Endpoint Sources
 * [HITO](https://hitontology.eu/sparql) including the [Software Ontology](https://www.ebi.ac.uk/ols/ontologies/swo/terms?iri=http://www.ebi.ac.uk/swo/).
 * [DBpedia](https://dbpedia.org/sparql)
 
+## Compare
+Compare the contents of the SPARQL endpoint to those within the database. 
+
 ## Export
+Export data back from the database to the SPARQL endpoint.
+
 ### Requirements
 * bash
 * [Ontop](https://ontop-vkg.org/guide/cli.html) with the [PostgreSQL JDBC driver](https://jdbc.postgresql.org/)
