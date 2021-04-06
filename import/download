@@ -1,4 +1,4 @@
 #/bin/bash
-cd scripts
+cd py
 python download.py
 cd ..

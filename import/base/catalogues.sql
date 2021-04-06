@@ -6,7 +6,7 @@
 -- ?z rdfs:label ?b.
 -- }
 
-INSERT INTO catalogue(suffix,label,type)VALUES
+INSERT INTO catalogue(suffix,label,type) VALUES
 ('WhoDhiClientFeatureCatalogue','Client Feature Catalogue','Feature'),
 ('WhoDhiDataServiceFeatureCatalogue','Data Service Feature Catalogue','Feature'),
 ('WhoDhiHealthSystemManagerFeatureCatalogue','Health System Managers Feature Catalogue','Feature'),
