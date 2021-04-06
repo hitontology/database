@@ -32,5 +32,5 @@ for q in QUERIES:
     text = re.sub(r'[ \t]+',' ',text)
     text = "\n".join(sorted(text.split("\n")))
     # todo: normalize whitespace to one space
-    print(text)
+    print(text.strip())
 
