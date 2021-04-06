@@ -6,13 +6,13 @@ Contains software products and related attributes, such as licenses
 
 1. Append to ` ~/.ssh/config`:
 
-    Host hitotunnel
-    Hostname 139.18.158.56
-    ProxyJump  star
-    LocalForward 5432 localhost:5433
-    ControlMaster auto
-    ControlPath ~/.ssh/sockets/%r@%h:%p
-    User snik
+        Host hitotunnel
+        Hostname 139.18.158.56
+        ProxyJump star
+        LocalForward 5432 localhost:5433
+        ControlMaster auto
+        ControlPath ~/.ssh/sockets/%r@%h:%p
+        User snik
 
 2. Open tunnel via `ssh -fN hitotunnel`
  
