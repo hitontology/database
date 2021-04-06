@@ -1,8 +1,0 @@
-# this query exported as csv can be imported by phppgadmin import functionality, maybe nice approach for future work
-select ?x as ?suffix, STR(?y) as ?label, STR(?z) as ?comment, concat("{'",group_concat(?b;separator="','"),"'}") as ?sourceuris
- {
- ?x a hito:Interoperability;
-    rdfs:label ?y;
-   rdfs:comment ?z;
-   <http://purl.org/dc/terms/source> ?b.
- }
