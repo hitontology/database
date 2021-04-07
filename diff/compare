@@ -1,3 +1,6 @@
 echo "only in endpoint, only in database, in both files" 
-comm  tmp/sparql.nt ../export/output/export.nt  --total  | tail -1
+comm tmp/sparql.nt ../export/output/all.nt  --total  | tail -1
+comm tmp/sparql.nt ../export/output/all.nt -13 > tmp/diff.nt
+cat ../export/prefix.ttl tmp/diff.nt > /tmp/x              
+rapper -i turtle -o turtle /tmp/x > tmp/diff.ttl
 
