@@ -1,5 +1,7 @@
 mkdir -p tmp
 python sparqldump.py | sort > tmp/sparql.nt
+cat ../export/prefix.ttl tmp/sparql.nt > /tmp/sparql0.ttl
+rapper -i turtle -o turtle /tmp/sparql0.ttl > tmp/sparql.ttl
 cd ../export
 ./export
 cd ../diff

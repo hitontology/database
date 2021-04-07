@@ -1,1 +1,1 @@
-vimdiff tmp/sparql.nt ../export/output/export.nt 
+vimdiff tmp/sparql.nt ../export/output/all.nt 

@@ -14,11 +14,18 @@ ENDPOINT = "https://hitontology.eu/sparql/"
 QUERIES = [
     """CONSTRUCT {?s ?p ?o.}
     {
+     {
      ?x a [rdfs:subClassOf hito:Citation].
      [a hito:SoftwareProduct] ?y ?x. # related to a software product, not a study citation
      ?s ?p ?o.
      MINUS {?s a [rdfs:subClassOf hito:Study].}
      FILTER(?s=?x OR ?o=?x)
+     }
+     UNION
+     {
+      ?s ?p ?o.
+      ?s a hito:SoftwareProduct.
+     }
     }"""
     ]
 

@@ -1,14 +1,21 @@
 #/bin/bash
 echo "This will export parts of the HITO Database as RDF but it is not finished yet."
 mkdir -p output
-ontop materialize \
- -m r2rml/citation.r2rml.ttl \
- -o export.ontop.ttl \
- -f turtle \
- -p hito.properties
 
-cat prefix.ttl export.ontop.ttl > tmp.ttl
-rapper -i turtle -o turtle tmp.ttl > output/export.ttl
-rapper -i turtle -o ntriples export.ontop.ttl | sort > output/export.nt
-rm tmp.ttl
-rm export.ontop.ttl
+cp prefix.ttl output/tmp.ttl
+
+mappings=("citation" "swp")
+for m in ${mappings[@]}
+do
+  ontop materialize \
+   -m r2rml/$m.r2rml.ttl \
+   -o output/$m.ontop.nt \
+   -f ntriples \
+   -p hito.properties
+
+  cat output/$m.ontop.nt >> output/tmp.ttl
+done
+
+rapper -i turtle -o turtle output/tmp.ttl > output/all.ttl
+rapper -i turtle -o ntriples output/all.ttl | sort > output/all.nt
+rm output/tmp.ttl
