@@ -168,6 +168,12 @@ create table swp_has_databasesystem(
 	db_suffix character varying(20) NOT NULL REFERENCES databasesystem(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (swp_suffix, db_suffix)
 );
+-- direct connection between software product and classified
+create table swp_has_classified(
+	swp_suffix character varying(200) NOT NULL REFERENCES softwareproduct(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	classified_suffix character varying(200) NOT NULL REFERENCES classified(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (swp_suffix, classified_suffix)
+);
 create table feature_supports_function(
 	feature_suffix character varying(200) NOT NULL REFERENCES citation(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
 	function_suffix character varying(200) NOT NULL REFERENCES citation(suffix) ON DELETE CASCADE ON UPDATE CASCADE,
