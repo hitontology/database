@@ -239,6 +239,13 @@ SELECT 'http://hitontology.eu/ontology/' || swp_suffix AS subject,
        uri AS object
 FROM   citation;
 
+-- Assumes that all classifieds in that table are features
+CREATE VIEW swp_classified_rdf AS
+SELECT 'http://hitontology.eu/ontology/' || swp_suffix AS subject,
+       'http://hitontology.eu/ontology/directFeature'  AS predicate,
+       'http://hitontology.eu/ontology/' || classified_suffix AS object
+FROM   swp_has_classified;
+
 CREATE VIEW citation_classified_rdf AS
 SELECT citation.uri AS subject,
        'http://hitontology.eu/ontology/' ||
