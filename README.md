@@ -40,9 +40,6 @@ The `import` script executes the SQL statements within those .SQL files on the H
 * [HITO](https://hitontology.eu/sparql) including the [Software Ontology](https://www.ebi.ac.uk/ols/ontologies/swo/terms?iri=http://www.ebi.ac.uk/swo/).
 * [DBpedia](https://dbpedia.org/sparql)
 
-## Compare
-Compare the contents of the SPARQL endpoint to those within the database. 
-
 ## Export
 Export data back from the database to the SPARQL endpoint.
 
@@ -55,6 +52,12 @@ Export data back from the database to the SPARQL endpoint.
 
 Copy `scripts/export/hito.properties.dist` to `scripts/export/hito.properties` and add the database password.
 
-### Usage
-    ./export
+### Workflow
+
+    cd diff
+    ./prepare
+    ./compare
+    ./diff
+
+Or even better, `vimdiff export/output/all.ttl /path/to/my/ontology/swp.ttl` from the base directory and then you can directly push the changes into the ontology repository.
 
