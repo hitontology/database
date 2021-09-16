@@ -108,25 +108,35 @@
     ].
 
 <#SwpHasOperatingSystemMap>
-    rr:logicalTable [ rr:tableName "swp_has_operatingsystem" ];
+	rr:logicalTable [rr:sqlQuery """
+		SELECT
+		CONCAT('http://hitontology.eu/ontology/',swp_suffix) AS swp,
+		CONCAT('http://dbpedia.org/resource/',os_suffix) AS os
+		FROM swp_has_operatingsystem
+	"""];
     rr:subjectMap [
-        rr:template "http://hitontology.eu/ontology/{swp_suffix}";
+        rr:column "swp";
         rr:class hito:SoftwareProduct;
     ];
     rr:predicateObjectMap [
         rr:predicate hito:operatingSystem;
-        rr:objectMap [ rr:template "http://dbpedia.org/resource/{os_suffix}"; rr:termType rr:IRI ];
+        rr:objectMap [ rr:column "os"; rr:termType rr:IRI ];
     ].
 
 <#SwpHasProgrammingLanguageMap>
-    rr:logicalTable [ rr:tableName "swp_has_programminglanguage" ];
+	rr:logicalTable [rr:sqlQuery """
+		SELECT
+		CONCAT('http://hitontology.eu/ontology/',swp_suffix) AS swp,
+		CONCAT('http://dbpedia.org/resource/',plang_suffix) AS plang
+		FROM swp_has_programminglanguage
+	"""];
     rr:subjectMap [
-        rr:template "http://hitontology.eu/ontology/{swp_suffix}";
+        rr:column "swp";
         rr:class hito:SoftwareProduct;
     ];
     rr:predicateObjectMap [
         rr:predicate hito:programmingLanguage;
-        rr:objectMap [ rr:template "http://dbpedia.org/resource/{plang_suffix}"; rr:termType rr:IRI ];
+        rr:objectMap [ rr:column "plang"; rr:termType rr:IRI ];
     ].
 
 <#SwpHasProgrammingLibraryMap>
