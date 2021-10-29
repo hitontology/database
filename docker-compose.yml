@@ -1,0 +1,186 @@
+# HITO - Toolset
+# Autor: Sebastian Stäubert <sebastian.staeubert@imise.uni-leipzig.de>
+# Changes from Konrad Höffner <konrad.hoeffner@imise.uni-leipzig.de>
+
+version: '3'
+
+services:
+
+# Virtuoso:
+#   Access via http://<hostname>:8080
+#   Access vio iSQL://localhost:1111
+
+#  virtuoso:
+#    image: tenforce/virtuoso:latest
+#    environment:
+#      DBA_PASSWORD: ${DBA_PASSWORD}
+#      SPARQL_UPDATE: 'true'
+#      DEFAULT_GRAPH: 'http://www.snik.eu/ontology'
+#    volumes:
+#      - /usr/local/virtuoso-opensource/lib
+#      - virtuoso-data:/data
+#    ports:
+#      - "127.0.0.1:8102:8890"
+#      - "127.0.0.1:8103:1111"
+#    restart: unless-stopped
+
+# OntoWiki/phpserver
+# Achtung: es muss noch manuell ein Link von /var/www/html -> ontowiki gesetzt werden!
+#  phpserver:
+#    image: aksw/php-5.6-fpm-odbc-virtuoso
+#    #build: ./phpserver
+#    environment:
+#      #DBA_PASSWORD: 'DBA'
+#      SPARQL_UPDATE: "true"
+#    volumes_from:
+#      - ontowiki 
+#      - virtuoso
+#    volumes:
+#      - ./config.ini:/var/www/html/config.ini
+#      #  - virtuoso-data:/usr/local/virtuoso-opensource/lib
+#    links:
+#      - virtuoso
+#    restart: unless-stopped
+
+# OntoWiki/nginx
+#   Access via http://<hostname>:8085/ontowiki
+#  nginx:
+#    #image: aksw/nginx-ontowiki
+#    build: ./nginx
+#    volumes_from:
+#      #- ontowiki
+#      - phpserver
+#    #volumes:
+#    #  - ./nginx.conf:/etc/nginx/nginx.conf
+#    #  - nmdr_virtuoso-data:/usr/local/virtuoso-opensource/lib
+#    links:
+#      - phpserver
+#    ports:
+#      #- "127.0.0.1:8085:80"
+#      - "8085:80"
+#    restart: unless-stopped
+
+## OntoWiki/ontowiki
+#  ontowiki:
+#    #image: aksw/ontowiki
+#    build: ./ontowiki
+#    #environment:
+#      #DBA_PASSWORD: dba
+#      #SPARQL_UPDATE: "true" 
+#    volumes:
+#    #  - nmdr_virtuoso-data:/usr/local/virtuoso-opensource/lib
+#      - /var/www/html
+#    links:
+#      - virtuoso
+#    restart: unless-stopped
+
+# LodView
+#   Access via http://<hostname>:8889
+#  lodview:
+#    build: ./lodview
+#    ports:
+#      - "127.0.0.1:8104:8080"
+#    links:
+#      - virtuoso
+#    restart: unless-stopped
+
+## TripleCheckMate
+##   Access via http://<hostname>:8888
+#  triplecheckmate:
+#    build: ./TripleCheckMate
+#    ports:
+#      - "8888:8080"
+#    links:
+#      - virtuoso
+#    restart: unless-stopped
+
+  sparqltosql:
+    build: .
+    #depends_on:
+    #  - virtuoso
+    #environment:
+    #  - HITO_SPARQL_ENDPOINT=localhost:...
+    #  - DBPEDIA_SPARQL_ENDPOINT= 
+    volumes:
+      - sql:/sql
+
+  postgresql:
+    image: bitnami/postgresql:14
+    restart: unless-stopped
+    #ports:
+     # - "127.0.0.1:5433:5432"
+    environment:
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - sql:/docker-entrypoint-initdb.d
+      #- /path/to/postgresql-persistence:/bitnami/postgresql
+    depends_on:
+      - sparqltosql
+
+  phppgadmin:
+    #restart: unless-stopped
+    #image: dockage/phppgadmin:latest
+    image: bitnami/phppgadmin:latest
+    ports:
+      #- "127.0.0.1:8111:8080"
+      - '80:8080'
+    depends_on:
+      - postgresql
+    #- "443:443"
+    #environment:
+    #- PHP_PG_ADMIN_SERVER_DESC=PostgreSQL
+    #- PHP_PG_ADMIN_SERVER_HOST=postgres
+    #- PHP_PG_ADMIN_SERVER_PORT=5432
+    #- PHP_PG_ADMIN_SERVER_SSL_MODE=allow
+    #- PHP_PG_ADMIN_SERVER_DEFAULT_DB=postgres
+    #- PHP_PG_ADMIN_SERVER_PG_DUMP_PATH=/usr/bin/pg_dump
+    #- PHP_PG_ADMIN_SERVER_PG_DUMPALL_PATH=/usr/bin/pg_dumpall
+
+    #- PHP_PG_ADMIN_DEFAULT_LANG=auto
+    #- PHP_PG_ADMIN_AUTO_COMPLETE=default on
+    #- PHP_PG_ADMIN_EXTRA_LOGIN_SECURITY=false
+    #- PHP_PG_ADMIN_OWNED_ONLY=false
+    #- PHP_PG_ADMIN_SHOW_COMMENTS=true
+    #- PHP_PG_ADMIN_SHOW_ADVANCED=false
+    #- PHP_PG_ADMIN_SHOW_SYSTEM=false
+    #- PHP_PG_ADMIN_MIN_PASSWORD_LENGTH=8
+    #- PHP_PG_ADMIN_LEFT_WIDTH=200
+    #- PHP_PG_ADMIN_THEME=default
+    #- PHP_PG_ADMIN_SHOW_OIDS=false
+    #- PHP_PG_ADMIN_MAX_ROWS=30
+    #- PHP_PG_ADMIN_MAX_CHARS=50
+    #- PHP_PG_ADMIN_USE_XHTML_STRICT=false
+    #- PHP_PG_ADMIN_HELP_BASE=http://www.postgresql.org/docs/%s/interactive/
+    #- PHP_PG_ADMIN_AJAX_REFRESH=3
+
+  
+#  database-frontend:
+#    restart: unless-stopped
+#    build: ./database-frontend
+#    depends_on:
+#      - postgres
+#    ports:
+#      - "127.0.0.1:8112:5000"
+#    environment:
+#      - HITO_DATABASE_HOST=postgres
+#      - HITO_DATABASE_PORT=5432
+#      - HITO_DATABASE_PASSWORD=${POSTGRES_PASSWORD}
+#      - HITO_DATABASE_FRONTEND_SERVER_NAME=bruchtal.imise.uni-leipzig.de/database-frontend
+#    volumes:
+#      - ./database-frontend:/usr/src/app
+
+#networks:
+#  default:
+#    ipam:
+#      driver: default
+#      config:
+#         - subnet: 172.23.13.0/24
+#           ip_range: 172.23.13.0/24
+#           gateway: 172.23.13.254
+
+volumes:
+#  virtuoso-data:
+  postgres-data:
+  sql:
+
