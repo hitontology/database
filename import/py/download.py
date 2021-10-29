@@ -26,7 +26,13 @@ def insert(values,arrayfields):
     s = ",".join(mapped) 
     return "("+s+")"
 
-outputBase = "tmp/"
+SQL_OUTPUT_BASE_DIR_DEFAULT = "./tmp/"
+outputBase = os.environ.get("SQL_OUTPUT_BASE_DIR")
+if(outputBase==None):
+    outputBase = SQL_OUTPUT_BASE_DIR_DEFAULT
+    print("Environment variable SQL_OUTPUT_BASE_DIR not set, using default value",outputBase)
+if not outputBase.endswith("/"):
+    outputBase+="/"
 if os.path.exists(outputBase):
     shutil.rmtree(outputBase)
 for clazz in classes:
@@ -42,7 +48,7 @@ for clazz in classes:
     if len(rows)==0:
         print(f"""No entries found for {clazz["table"]}:\n{clazz["query"]}""")
     else:
-        folder= "tmp/"+clazz["folder"]
+        folder= outputBase+clazz["folder"]
         if not os.path.exists(folder):
             os.makedirs(folder,0o777,True)
         output=open(folder+"/"+filename, "w")
