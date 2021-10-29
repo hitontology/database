@@ -1,5 +1,24 @@
+import os
+
 suffix = lambda s: f'REPLACE(STR({s}),".*/","")'
 concat = lambda s: f'GROUP_CONCAT(DISTINCT({s});separator="|")';
+
+endpoints = {
+ "HITO": {
+    "name": "HITO_SPARQL_ENDPOINT",
+    "default": "https://hitontology.eu/sparql"
+    },
+ "DBPEDIA": {
+    "name": "DBPEDIA_SPARQL_ENDPOINT",
+    "default": "https://dbpedia.org/sparql"
+    }
+}
+
+for key,endpoint in endpoints.items():
+    endpoint["value"] = os.environ.get(endpoint["name"])
+    if(endpoint["value"]==None):
+        print("Environment variable",endpoint["name"],"not set, using default value",endpoint["default"])
+        endpoint["value"] = endpoint["default"]
 
 standard = {
     "query": f'''SELECT REPLACE(STR(?uri),"http://hitontology.eu/ontology/","") as ?suffix
@@ -14,7 +33,7 @@ standard = {
   OPTIONAL {{?uri rdfs:comment ?z.}}
 }}''',
     "folder": "attribute",
-    "endpoint": "https://hitontology.eu/sparql",
+    "endpoint": endpoints["HITO"]["value"],
     "table": "interoperabilitystandard",
     "fields": "(suffix, label, comment, sourceuris)",
     "arrayfields": [3]
@@ -29,7 +48,7 @@ language = {
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
     "folder": "attribute",
-    "endpoint": "https://dbpedia.org/sparql",
+    "endpoint": endpoints["DBPEDIA"]["value"],
     "table": "language",
     "fields": "(suffix, label)",
     "arrayfields": []
@@ -46,7 +65,7 @@ SELECT REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/license/","") as ?suffix STR(
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
     "folder": "attribute",
-    "endpoint": "https://hitontology.eu/sparql",
+    "endpoint": endpoints["HITO"]["value"],
     "table": "license",
     "fields": "(suffix, label)",
     "arrayfields": []
@@ -60,7 +79,7 @@ programmingLanguage = {
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
     "folder": "attribute",
-    "endpoint": "https://dbpedia.org/sparql",
+    "endpoint": endpoints["DBPEDIA"]["value"],
     "table": "programminglanguage",
     "fields": "(suffix, label)",
     "arrayfields": []
@@ -74,7 +93,7 @@ programmingLibrary = {
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
     "folder": "attribute",
-    "endpoint": "https://hitontology.eu/sparql",
+    "endpoint": endpoints["HITO"]["value"],
     "table": "programminglibrary",
     "fields": "(suffix, label)",
     "arrayfields": []
@@ -88,7 +107,7 @@ operatingSystem = {
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }''',
     "folder": "attribute",
-    "endpoint": "https://hitontology.eu/sparql",
+    "endpoint": endpoints["HITO"]["value"],
     "table": "operatingsystem",
     "fields": "(suffix, label)",
     "arrayfields": []
@@ -112,7 +131,7 @@ SAMPLE(?homepage) AS ?homepage
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }}''',
     "folder": "swp",
-    "endpoint": "https://hitontology.eu/sparql",
+    "endpoint": endpoints["HITO"]["value"],
     "table": "softwareproduct",
     "fields": "(suffix, label, comment, coderepository, homepage)",
     "arrayfields": [5,6]
@@ -136,7 +155,7 @@ CONCAT(UCASE(SUBSTR(?p_suffix, 1, 1)), SUBSTR(?p_suffix, 2)) AS ?type
  OPTIONAL {{?citation rdfs:comment ?comment.}}
 }}''',
     "folder": "swp",
-    "endpoint": "https://hitontology.eu/sparql",
+    "endpoint": endpoints["HITO"]["value"],
     "table": "citation",
     "fields": "(suffix,swp_suffix, label,comment,type)",
     "arrayfields": []
@@ -170,7 +189,7 @@ STR(SAMPLE(?comment)) AS ?comment
  FILTER(!STRSTARTS(STR(?suffix),"Unknown")) # We treat UnknownX instances as NULL in DB
 }}''',
     "folder": "catalogue",
-    "endpoint": "https://hitontology.eu/sparql",
+    "endpoint": endpoints["HITO"]["value"],
     "table": "classified",
     "fields": "(suffix,catalogue_suffix,n,label,comment,synonyms,dct_source,dce_sources)",
     "arrayfields": [5,6,7]
@@ -193,12 +212,12 @@ SELECT
 GROUP BY ?citation ?classified
 HAVING (COUNT(?swp)>=1)''',
     "folder": "relation",
-    "endpoint": "https://hitontology.eu/sparql",
+    "endpoint": endpoints["HITO"]["value"],
     "table": "citation_has_classified",
     "fields": "(citation_suffix,classified_suffix)",
     "arrayfields": []
 }
-print(citation_has_classified["query"])
+#print(citation_has_classified["query"])
 
 classifiedComponent = {
     "query": f'''
@@ -210,7 +229,7 @@ SELECT
  ?p rdfs:subPropertyOf hito:subClassifiedOf.
 }}''',
     "folder": "relation",
-    "endpoint": "https://hitontology.eu/sparql",
+    "endpoint": endpoints["HITO"]["value"],
     "table": "classified_has_child",
     "fields": "(parent_suffix,child_suffix)",
     "arrayfields": []
@@ -225,7 +244,7 @@ SELECT
  ?feature hito:supportsFunction ?function.
 }}''',
     "folder": "relation",
-    "endpoint": "https://hitontology.eu/sparql",
+    "endpoint": endpoints["HITO"]["value"],
     "table": "feature_supports_function",
     "fields": "(feature_suffix,function_suffix)",
     "arrayfields": []
@@ -255,7 +274,7 @@ relations = map(lambda d: {
  ?uri a hito:SoftwareProduct; hito:{d["p"]} ?x.
 }}''',
     "folder": "relation",
-    "endpoint": "https://hitontology.eu/sparql",
+    "endpoint": endpoints["HITO"]["value"],
     "table": d['table'],
     "fields": f"({d['fieldList'][0]},{d['fieldList'][1]})",
     "arrayfields": []
@@ -263,4 +282,3 @@ relations = map(lambda d: {
 , relationData)
 
 classes = [standard,language,license,programmingLanguage,programmingLibrary,operatingSystem,softwareProduct,classified,classifiedComponent,featureSupportsFunction,citation,citation_has_classified] + list(relations)
-
