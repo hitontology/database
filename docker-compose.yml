@@ -24,56 +24,6 @@ services:
 #      - "127.0.0.1:8103:1111"
 #    restart: unless-stopped
 
-# OntoWiki/phpserver
-# Achtung: es muss noch manuell ein Link von /var/www/html -> ontowiki gesetzt werden!
-#  phpserver:
-#    image: aksw/php-5.6-fpm-odbc-virtuoso
-#    #build: ./phpserver
-#    environment:
-#      #DBA_PASSWORD: 'DBA'
-#      SPARQL_UPDATE: "true"
-#    volumes_from:
-#      - ontowiki 
-#      - virtuoso
-#    volumes:
-#      - ./config.ini:/var/www/html/config.ini
-#      #  - virtuoso-data:/usr/local/virtuoso-opensource/lib
-#    links:
-#      - virtuoso
-#    restart: unless-stopped
-
-# OntoWiki/nginx
-#   Access via http://<hostname>:8085/ontowiki
-#  nginx:
-#    #image: aksw/nginx-ontowiki
-#    build: ./nginx
-#    volumes_from:
-#      #- ontowiki
-#      - phpserver
-#    #volumes:
-#    #  - ./nginx.conf:/etc/nginx/nginx.conf
-#    #  - nmdr_virtuoso-data:/usr/local/virtuoso-opensource/lib
-#    links:
-#      - phpserver
-#    ports:
-#      #- "127.0.0.1:8085:80"
-#      - "8085:80"
-#    restart: unless-stopped
-
-## OntoWiki/ontowiki
-#  ontowiki:
-#    #image: aksw/ontowiki
-#    build: ./ontowiki
-#    #environment:
-#      #DBA_PASSWORD: dba
-#      #SPARQL_UPDATE: "true" 
-#    volumes:
-#    #  - nmdr_virtuoso-data:/usr/local/virtuoso-opensource/lib
-#      - /var/www/html
-#    links:
-#      - virtuoso
-#    restart: unless-stopped
-
 # LodView
 #   Access via http://<hostname>:8889
 #  lodview:
