@@ -57,8 +57,10 @@ services:
   postgresql:
     image: bitnami/postgresql:14
     restart: unless-stopped
-    #ports:
-     # - "127.0.0.1:5433:5432"
+    ports:
+      #- "127.0.0.1:5433:5432"
+# for testing with a separate frontend instance:
+      - "5432:5432"
     environment:
       - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
     volumes:
@@ -105,20 +107,22 @@ services:
     #- PHP_PG_ADMIN_AJAX_REFRESH=3
 
   
-#  database-frontend:
-#    restart: unless-stopped
-#    build: ./database-frontend
-#    depends_on:
-#      - postgres
-#    ports:
-#      - "127.0.0.1:8112:5000"
-#    environment:
-#      - HITO_DATABASE_HOST=postgres
-#      - HITO_DATABASE_PORT=5432
-#      - HITO_DATABASE_PASSWORD=${POSTGRES_PASSWORD}
-#      - HITO_DATABASE_FRONTEND_SERVER_NAME=bruchtal.imise.uni-leipzig.de/database-frontend
-#    volumes:
-#      - ./database-frontend:/usr/src/app
+  database-frontend:
+    restart: unless-stopped
+    build: ../database-frontend
+    depends_on:
+      - postgresql
+    ports:
+      #- "127.0.0.1:8112:5000"
+      - "8112:5000"
+    environment:
+      - HITO_DATABASE_HOST=postgresql
+      - HITO_DATABASE_PORT=5432
+      - HITO_DATABASE_PASSWORD=${POSTGRESQL_PASSWORD}
+      - HITO_DATABASE_FRONTEND_SERVER_NAME=bruchtal.imise.uni-leipzig.de/database-frontend
+      - HITO_DATABASE_NAME=postgres
+    volumes:
+      - ./database-frontend:/usr/src/app
 
 #networks:
 #  default:
