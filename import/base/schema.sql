@@ -265,5 +265,5 @@ parent.suffix as parent_suffix,
 parent.type AS parent_type
 FROM classified_has_child
 JOIN classified_type child ON classified_has_child.child_suffix=child.suffix
-JOIN classified_type parent ON classified_has_child.parent_suffix=parent.suffix
+JOIN classified_type parent ON classified_has_child.parent_suffix=parent.suffix;
 
