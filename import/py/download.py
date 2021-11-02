@@ -26,7 +26,7 @@ def insert(values,arrayfields):
     s = ",".join(mapped) 
     return "("+s+")"
 
-SQL_OUTPUT_BASE_DIR_DEFAULT = "./tmp/"
+SQL_OUTPUT_BASE_DIR_DEFAULT = "/tmp/sql/"
 outputBase = os.environ.get("SQL_OUTPUT_BASE_DIR")
 if(outputBase==None):
     outputBase = SQL_OUTPUT_BASE_DIR_DEFAULT
