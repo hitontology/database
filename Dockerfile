@@ -1,4 +1,4 @@
-FROM python:alpine
+FROM python:slim
 
 LABEL	maintainer="Konrad Höffner" \
 	maintainer.email="konrad.hoeffner(at)imise.uni-leipzig.de" \
