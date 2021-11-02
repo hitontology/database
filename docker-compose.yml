@@ -55,12 +55,11 @@ services:
       - sql:/sql
 
   postgresql:
-    image: bitnami/postgresql:14
+    # upgrade to postgresql 14 when available for Arch Linux for local testing
+    image: bitnami/postgresql:13
     restart: unless-stopped
     ports:
-      #- "127.0.0.1:5433:5432"
-# for testing with a separate frontend instance:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
       - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
     volumes:
@@ -75,11 +74,11 @@ services:
     #image: dockage/phppgadmin:latest
     image: bitnami/phppgadmin:latest
     ports:
-      #- "127.0.0.1:8111:8080"
-      - '80:8080'
+      - "127.0.0.1:8111:8080"
+      #- "443:443"
+      #- '80:8080'
     depends_on:
       - postgresql
-    #- "443:443"
     #environment:
     #- PHP_PG_ADMIN_SERVER_DESC=PostgreSQL
     #- PHP_PG_ADMIN_SERVER_HOST=postgres
@@ -106,23 +105,19 @@ services:
     #- PHP_PG_ADMIN_HELP_BASE=http://www.postgresql.org/docs/%s/interactive/
     #- PHP_PG_ADMIN_AJAX_REFRESH=3
 
-  
   database-frontend:
     restart: unless-stopped
     build: ../database-frontend
     depends_on:
       - postgresql
     ports:
-      #- "127.0.0.1:8112:5000"
       - "8112:5000"
     environment:
       - HITO_DATABASE_HOST=postgresql
       - HITO_DATABASE_PORT=5432
       - HITO_DATABASE_PASSWORD=${POSTGRESQL_PASSWORD}
-      - HITO_DATABASE_FRONTEND_SERVER_NAME=bruchtal.imise.uni-leipzig.de/database-frontend
       - HITO_DATABASE_NAME=postgres
-    volumes:
-      - ./database-frontend:/usr/src/app
+      #- HITO_DATABASE_FRONTEND_SERVER_NAME=bruchtal.imise.uni-leipzig.de/database-frontend
 
 #networks:
 #  default:
@@ -134,7 +129,7 @@ services:
 #           gateway: 172.23.13.254
 
 volumes:
-#  virtuoso-data:
+  virtuoso-data:
   postgres-data:
   sql:
 
