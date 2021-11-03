@@ -10,19 +10,19 @@ services:
 #   Access via http://<hostname>:8080
 #   Access vio iSQL://localhost:1111
 
-#  virtuoso:
-#    image: tenforce/virtuoso:latest
-#    environment:
-#      DBA_PASSWORD: ${DBA_PASSWORD}
-#      SPARQL_UPDATE: 'true'
-#      DEFAULT_GRAPH: 'http://www.snik.eu/ontology'
-#    volumes:
-#      - /usr/local/virtuoso-opensource/lib
-#      - virtuoso-data:/data
-#    ports:
-#      - "127.0.0.1:8102:8890"
-#      - "127.0.0.1:8103:1111"
-#    restart: unless-stopped
+  virtuoso:
+    image: tenforce/virtuoso:latest
+    environment:
+      DBA_PASSWORD: ${DBA_PASSWORD}
+      SPARQL_UPDATE: 'true'
+      DEFAULT_GRAPH: 'http://www.snik.eu/ontology'
+    volumes:
+      - /usr/local/virtuoso-opensource/lib
+      - virtuoso-data:/data
+    ports:
+      - "127.0.0.1:8102:8890"
+      - "127.0.0.1:8103:1111"
+    restart: unless-stopped
 
 # LodView
 #   Access via http://<hostname>:8889
@@ -46,10 +46,10 @@ services:
 
   sparqltosql:
     build: .
-    #depends_on:
-    #  - virtuoso
-    #environment:
-    #  - HITO_SPARQL_ENDPOINT=localhost:...
+    depends_on:
+      - virtuoso
+    environment:
+      - HITO_SPARQL_ENDPOINT=localhost:8890/sparql
     #  - DBPEDIA_SPARQL_ENDPOINT= 
     volumes:
       - sql:/sql
