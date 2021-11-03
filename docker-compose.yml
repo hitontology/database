@@ -2,7 +2,7 @@
 # Autor: Sebastian Stäubert <sebastian.staeubert@imise.uni-leipzig.de>
 # Changes from Konrad Höffner <konrad.hoeffner@imise.uni-leipzig.de>
 
-version: '3'
+version: '2'
 
 services:
 
@@ -23,6 +23,8 @@ services:
       - "127.0.0.1:8102:8890"
       - "127.0.0.1:8103:1111"
     restart: unless-stopped
+    #healthcheck:
+    #  test: ["CMD", "curl", "-f", "http://localhost:8890"]
 
 # LodView
 #   Access via http://<hostname>:8889
@@ -48,8 +50,10 @@ services:
     build: .
     depends_on:
       - virtuoso
+    #  virtuoso:
+    #    condition: service_healthy
     environment:
-      - HITO_SPARQL_ENDPOINT=localhost:8890/sparql
+      - HITO_SPARQL_ENDPOINT=http://virtuoso:8890/sparql
     #  - DBPEDIA_SPARQL_ENDPOINT= 
     volumes:
       - sql:/sql

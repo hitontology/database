@@ -1,4 +1,5 @@
-FROM python:slim
+# alpine includes netcat for wait-for
+FROM python:alpine
 
 LABEL	maintainer="Konrad Höffner" \
 	maintainer.email="konrad.hoeffner(at)imise.uni-leipzig.de" \
@@ -17,8 +18,8 @@ RUN pip install -r /tmp/requirements.txt --disable-pip-version-check --no-cache-
 WORKDIR /usr/src/app
 COPY ./import/classes.py .
 COPY ./import/download.py .
-#COPY ./import/wait-for .
+COPY ./import/wait-for .
 COPY ./import/base ./base
 
-CMD ["python","download.py"]
-#CMD ["./wait-for","localhost:8890","--","python","download.py"]
+#CMD ["python","download.py"]
+CMD ["./wait-for","virtuoso:8890","--","python","download.py"]
