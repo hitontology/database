@@ -5,20 +5,20 @@ LABEL	maintainer="Konrad Höffner" \
 	maintainer.organization="Universität Leipzig: Institut für Medizinische Informatik, Statistik und Epidemiologie (IMISE)" \
 	maintainer.repo="https://github.com/hitontology/database"
 
+ENV SQL_OUTPUT_BASE_DIR=/tmp/sql
+ENV SQL_FILE_COMPLETE=/sql/hito.ttl
+RUN mkdir -p ${SQL_OUTPUT_BASE_DIR} \
+ && mkdir -p /sql
 
-COPY ./import/py/requirements.txt /tmp
+COPY ./import/requirements.txt /tmp
 RUN pip install -r /tmp/requirements.txt --disable-pip-version-check --no-cache-dir
 
 # Copy source code
 WORKDIR /usr/src/app
-COPY ./import/py/classes.py .
-COPY ./import/py/download.py .
+COPY ./import/classes.py .
+COPY ./import/download.py .
+#COPY ./import/wait-for .
 COPY ./import/base ./base
 
-# Download from the SPARQL endpoint
-ENV SQL_OUTPUT_BASE_DIR=/tmp/sql
-RUN mkdir /tmp/sql \
- && mkdir -p /sql \
- && python download.py \
- && cat base/schema.sql base/catalogues.sql /tmp/sql/catalogue/classified.sql /tmp/sql/attribute/*.sql  /tmp/sql/swp/softwareproduct.sql /tmp/sql/swp/citation.sql /tmp/sql/relation/*.sql > /sql/hito.sql \
- && wc -l /sql/hito.sql
+CMD ["python","download.py"]
+#CMD ["./wait-for","localhost:8890","--","python","download.py"]

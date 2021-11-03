@@ -1,4 +1,0 @@
-#/bin/bash
-cd py
-python download.py
-cd ..

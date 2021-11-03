@@ -5,5 +5,4 @@ cd ../backup
 ./backup
 echo "Finished backup. Clearing and importing database."
 cd ../import
-cat base/schema.sql base/catalogues.sql /tmp/sql/catalogue/classified.sql /tmp/sql/attribute/*.sql  /tmp/sql/swp/softwareproduct.sql /tmp/sql/swp/citation.sql /tmp/sql/relation/*.sql > /tmp/sql/hito.sql
 psql -U postgres -d postgres -h localhost < /tmp/sql/hito.sql
