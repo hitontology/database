@@ -21,5 +21,4 @@ COPY ./import/download.py .
 COPY ./import/wait-for .
 COPY ./import/base ./base
 
-#CMD ["python","download.py"]
-CMD ["./wait-for","virtuoso:8890","--","python","download.py"]
+CMD ["python","download.py"]

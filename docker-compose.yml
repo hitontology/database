@@ -16,6 +16,8 @@ services:
       DBA_PASSWORD: ${DBA_PASSWORD}
       SPARQL_UPDATE: 'true'
       DEFAULT_GRAPH: 'http://www.snik.eu/ontology'
+      VIRT_Parameters_DirsAllowed: ., /usr/local/virtuoso-opensource/share/virtuoso/vad, /virtuoso/data
+
     volumes:
       - /usr/local/virtuoso-opensource/lib
       - virtuoso-data:/data
@@ -57,6 +59,7 @@ services:
     #  - DBPEDIA_SPARQL_ENDPOINT= 
     volumes:
       - sql:/sql
+    command: ["./wait-for","virtuoso:8890","--","python","download.py"]
 
   postgresql:
     # upgrade to postgresql 14 when available for Arch Linux for local testing
