@@ -46,10 +46,14 @@ if outputBase == None:
     )
 if not outputBase.endswith("/"):
     outputBase += "/"
-if os.path.exists(outputBase):
-    shutil.rmtree(outputBase)
+#if os.path.exists(outputBase):
+#    shutil.rmtree(outputBase)
 os.makedirs(outputBase, 0o777, True)
-allFile = open(outputBase + "hito.sql", "w")
+allFileName = outputBase+"hito.sql"
+if os.path.exists(allFileName):
+    print("Target file already exist. Skipping download.")
+    exit(0)
+allFile = open(allFileName, "w")
 with open("base/schema.sql", "r") as schema:
     shutil.copyfileobj(schema, allFile)
 with open("base/catalogues.sql", "r") as catalogues:
