@@ -6,8 +6,6 @@ import requests
 import csv
 import os
 import shutil
-from classes import classes
-
 
 def escape(s):
     return "E'" + s.replace("'", "''") + "'"  # escape single quotes, add quotes for SQL
@@ -53,6 +51,9 @@ allFileName = outputBase+"hito.sql"
 if os.path.exists(allFileName):
     print("Target file already exist. Skipping download.")
     exit(0)
+
+from classes import classes
+
 allFile = open(allFileName, "w")
 with open("base/schema.sql", "r") as schema:
     shutil.copyfileobj(schema, allFile)
