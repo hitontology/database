@@ -6,6 +6,8 @@ import requests
 import csv
 import os
 import shutil
+import rdflib
+from functools import reduce
 
 def escape(s):
     return "E'" + s.replace("'", "''") + "'"  # escape single quotes, add quotes for SQL
@@ -19,7 +21,7 @@ def valueMap(value, isArray):
             + ",".join(map(lambda v: '"' + v.replace("'", "''") + '"', values))
             + "}'"
         )
-    if value == "" or value.startswith("Unknown"):
+    if value == None or value == "" or value.startswith("Unknown"):
         return "NULL"
     return escape(value)
 
@@ -49,7 +51,7 @@ if not outputBase.endswith("/"):
 os.makedirs(outputBase, 0o777, True)
 allFileName = outputBase+"hito.sql"
 if os.path.exists(allFileName):
-    print("Target file already exist. Skipping download.")
+    print("Target file",allFileName,"already exists. Skipping download.")
     exit(0)
 
 from classes import classes
@@ -59,20 +61,42 @@ with open("base/schema.sql", "r") as schema:
     shutil.copyfileobj(schema, allFile)
 with open("base/catalogues.sql", "r") as catalogues:
     shutil.copyfileobj(catalogues, allFile)
+    stats = []
 for clazz in classes:
     filename = clazz["table"] + ".sql"
-    parameters = {"query": clazz["query"], "format": "text/tab-separated-values"}
-    resp = requests.get(clazz["endpoint"], params=parameters)
-    if resp.status_code != 200:
-        print("Error with SPARQL query :\n" + resp.text)
-        continue
-    readCSV = csv.reader(resp.text.splitlines(), delimiter="\t")
-    next(readCSV, None)  # skip CSV header
-    rows = list(readCSV)
+    rows = []
+    datasource = clazz["datasource"]
+    # Python 3.10 with match not released for Arch Linux as of 2021-11-10
+    if(datasource["type"]=="file"):
+        if not "graph" in datasource:
+            graph = rdflib.Graph()
+            graph.parse(datasource["value"])
+            graph.namespace_manager.bind('hito', rdflib.URIRef('http://hitontology.eu/ontology/'))
+            graph.namespace_manager.bind('skos', rdflib.namespace.OWL, override=False)
+            datasource["graph"] = graph
+        graph = datasource["graph"]
+        try:
+            rows = graph.query(clazz["query"])
+        except:
+            print("Error with SPARQL query ****************************\n"+clazz["query"]+"\n***************************************************")
+
+    elif(datasource["type"]=="endpoint"):
+        parameters = {"query": clazz["query"], "format": "text/tab-separated-values"}
+        resp = requests.get(datasource["value"], params=parameters)
+        if resp.status_code != 200:
+            print("Error with SPARQL query :\n" + resp.text)
+            continue
+        readCSV = csv.reader(resp.text.splitlines(), delimiter="\t")
+        next(readCSV, None)  # skip CSV header
+        rows = list(readCSV)
+    else:
+        print("Unknown type "+t+". Aborting")
+        exit(1)
     if len(rows) == 0:
         print(f"""No entries found for {clazz["table"]}:\n{clazz["query"]}""")
     else:
-        print("Downloading class " + clazz["table"])
+        #print("Downloaded class " + clazz["table"],"["+str(len(rows))+"]")
+        stats.append((clazz["table"],len(rows)))
         content = "\\echo FILL TABLE " + clazz["table"] + "\n"
         content += "DELETE FROM " + clazz["table"] + ";\n"
         content += "INSERT INTO " + clazz["table"] + clazz["fields"] + " VALUES" + "\n"
@@ -88,4 +112,6 @@ for clazz in classes:
             with open(folder + "/" + filename, "w") as singleFile:
                 singleFile.write(content)
         allFile.write(content)
+statprint = lambda s: s[0]+" ["+str(s[1])+"]"
+print("Successfully downloaded",reduce(lambda a,b: a+" "+b,map(statprint, stats)))
 allFile.close()
