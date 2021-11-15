@@ -19,6 +19,11 @@ datasources = {
         "type": "endpoint",
         "default": "https://dbpedia.org/sparql",
     },
+    "SWO": {
+        "name": "SWO_FILE",
+        "type": "file",
+        "default": "/tmp/swo.ttl",
+    },
 }
 
 for key, endpoint in datasources.items():
@@ -44,7 +49,9 @@ standard = {
 
   OPTIONAL {{?uri <http://purl.org/dc/terms/source> ?source.}}
   OPTIONAL {{?uri rdfs:comment ?z.}}
-}} ORDER BY ASC(?suffix)""",
+}}
+GROUP BY ?uri
+ORDER BY ASC(?uri)""",
     "folder": "attribute",
     "datasource": datasources["HITO"],
     "table": "interoperabilitystandard",
@@ -78,9 +85,11 @@ SELECT
  ?uri rdfs:subClassOf+ swo:SWO_0000002;
       rdfs:label ?label.
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
-} ORDER BY ASC(?suffix)""",
+}
+GROUP BY ?uri
+ORDER BY ASC(?suffix)""",
     "folder": "attribute",
-    "datasource": datasources["HITO"],
+    "datasource": datasources["SWO"],
     "table": "license",
     "fields": "(suffix, label)",
     "arrayfields": [],
@@ -92,7 +101,9 @@ programmingLanguage = {
  ?uri a yago:WikicatProgrammingLanguages ;
       rdfs:label ?label.
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
-} ORDER BY ASC(?suffix)""",
+}
+GROUP BY ?uri
+ORDER BY ASC(?suffix)""",
     "folder": "attribute",
     "datasource": datasources["DBPEDIA"],
     "table": "programminglanguage",
@@ -106,7 +117,9 @@ programmingLibrary = {
  ?uri a hito:ProgrammingLibrary ;
       rdfs:label ?label.
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
-} ORDER BY ASC(?suffix)""",
+}
+GROUP BY ?uri
+ORDER BY ASC(?suffix)""",
     "folder": "attribute",
     "datasource": datasources["HITO"],
     "table": "programminglibrary",
@@ -120,7 +133,9 @@ operatingSystem = {
  ?uri a hito:OperatingSystem ;
       rdfs:label ?label.
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
-} ORDER BY ASC(?suffix)""",
+}
+GROUP BY ?uri
+ORDER BY ASC(?suffix)""",
     "folder": "attribute",
     "datasource": datasources["HITO"],
     "table": "operatingsystem",
@@ -144,7 +159,9 @@ softwareProduct = {
  OPTIONAL {{?uri hito:homepage ?homepage.}}
 
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
-}} ORDER BY ASC(?suffix)""",
+}}
+GROUP BY ?uri
+ORDER BY ASC(?suffix)""",
     "folder": "swp",
     "datasource": datasources["HITO"],
     "table": "softwareproduct",
@@ -168,7 +185,9 @@ citation = {
 
  ?citation rdfs:label ?label.
  OPTIONAL {{?citation rdfs:comment ?comment.}}
-}} ORDER BY ASC(?suffix)""",
+}}
+GROUP BY ?citation ?uri
+ORDER BY ASC(?suffix)""",
     "folder": "swp",
     "datasource": datasources["HITO"],
     "table": "citation",
@@ -202,7 +221,9 @@ SELECT
 
  BIND(REPLACE(STR(?classified),".*/","") AS ?suffix)
  FILTER(!STRSTARTS(STR(?suffix),"Unknown")) # We treat UnknownX instances as NULL in DB
-}} ORDER BY ASC(?suffix)""",
+}}
+GROUP BY ?uri ?catalogue
+ORDER BY ASC(?suffix)""",
     "folder": "catalogue",
     "datasource": datasources["HITO"],
     "table": "classified",
@@ -349,3 +370,4 @@ classes = [
     citation,
     citation_has_classified,
 ] + list(relations)
+
