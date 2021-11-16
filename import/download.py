@@ -16,6 +16,7 @@ def escape(s):
 def valueMap(value, isArray):
     if isArray:
         values = filter(None, value.split("|"))  # remove empty strings on empty results
+        values = filter(lambda x: x!="None", values) # remove empty results from RDFLib optional GROUP_CONCAT
         return (
             "'{"
             + ",".join(map(lambda v: '"' + v.replace("'", "''") + '"', values))
@@ -72,10 +73,12 @@ for clazz in classes:
             graph = rdflib.Graph()
             graph.parse(datasource["value"])
             graph.namespace_manager.bind('hito', rdflib.URIRef('http://hitontology.eu/ontology/'))
-            graph.namespace_manager.bind('skos', rdflib.namespace.OWL, override=False)
+            graph.namespace_manager.bind('skos', rdflib.namespace.SKOS, override=False)
             datasource["graph"] = graph
         graph = datasource["graph"]
         try:
+            # https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result
+            #rows = list(graph.query(clazz["query"]))
             rows = graph.query(clazz["query"])
         except:
             print("Error with SPARQL query ****************************\n"+clazz["query"]+"\n***************************************************")
@@ -92,6 +95,7 @@ for clazz in classes:
     else:
         print("Unknown type "+t+". Aborting")
         exit(1)
+    #print(list(rows))
     if len(rows) == 0:
         print(f"""No entries found for {clazz["table"]}:\n{clazz["query"]}""")
     else:
@@ -102,8 +106,7 @@ for clazz in classes:
         content += "INSERT INTO " + clazz["table"] + clazz["fields"] + " VALUES" + "\n"
         content += ",\n".join(
             map(lambda line: insert(line, clazz["arrayfields"]), rows)
-        )
-        content += content
+        ) + "\n"
         content += "ON CONFLICT DO NOTHING;"  # skip duplicates instead of cancelling, only for testing
         if DEBUG:
             folder = outputBase + clazz["folder"]

@@ -22,20 +22,20 @@ datasources = {
     "SWO": {
         "name": "SWO_FILE",
         "type": "file",
-        "default": "/tmp/swo.ttl",
+        "default": "/tmp/license.ttl",
     },
 }
 
-for key, endpoint in datasources.items():
-    endpoint["value"] = os.environ.get(endpoint["name"])
-    if endpoint["value"] == None:
+for key, datasource in datasources.items():
+    datasource["value"] = os.environ.get(datasource["name"])
+    if datasource["value"] == None:
         print(
             "Environment variable",
-            endpoint["name"],
+            datasource["name"],
             "not set, using default value",
-            endpoint["default"],
+            datasource["default"],
         )
-        endpoint["value"] = endpoint["default"]
+        datasource["value"] = datasource["default"]
 
 standard = {
     "query": f"""SELECT
@@ -66,7 +66,7 @@ language = {
       rdfs:label ?label;
       dbo:iso6391Code [].
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
-} ORDER BY ASC(?suffix)""",
+} ORDER BY ASC(?uri)""",
     "folder": "attribute",
     "datasource": datasources["DBPEDIA"],
     "table": "language",
@@ -87,7 +87,7 @@ SELECT
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }
 GROUP BY ?uri
-ORDER BY ASC(?suffix)""",
+ORDER BY ASC(?uri)""",
     "folder": "attribute",
     "datasource": datasources["SWO"],
     "table": "license",
@@ -103,7 +103,7 @@ programmingLanguage = {
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }
 GROUP BY ?uri
-ORDER BY ASC(?suffix)""",
+ORDER BY ASC(?uri)""",
     "folder": "attribute",
     "datasource": datasources["DBPEDIA"],
     "table": "programminglanguage",
@@ -119,7 +119,7 @@ programmingLibrary = {
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }
 GROUP BY ?uri
-ORDER BY ASC(?suffix)""",
+ORDER BY ASC(?uri)""",
     "folder": "attribute",
     "datasource": datasources["HITO"],
     "table": "programminglibrary",
@@ -161,7 +161,7 @@ softwareProduct = {
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }}
 GROUP BY ?uri
-ORDER BY ASC(?suffix)""",
+ORDER BY ASC(?uri)""",
     "folder": "swp",
     "datasource": datasources["HITO"],
     "table": "softwareproduct",
@@ -186,8 +186,8 @@ citation = {
  ?citation rdfs:label ?label.
  OPTIONAL {{?citation rdfs:comment ?comment.}}
 }}
-GROUP BY ?citation ?uri
-ORDER BY ASC(?suffix)""",
+GROUP BY ?citation ?uri ?p_suffix
+ORDER BY ASC(?uri)""",
     "folder": "swp",
     "datasource": datasources["HITO"],
     "table": "citation",
@@ -211,6 +211,7 @@ SELECT
 {{
  ?classified ?p ?catalogue;
              rdfs:label ?label.
+ #FILTER(?classified=<http://hitontology.eu/ontology/BbCardiovascularInformationSystem>) 
  
  OPTIONAL {{?classified rdfs:comment ?comment.}}
  OPTIONAL {{?classified skos:altLabel ?synonym.}}
@@ -222,7 +223,7 @@ SELECT
  BIND(REPLACE(STR(?classified),".*/","") AS ?suffix)
  FILTER(!STRSTARTS(STR(?suffix),"Unknown")) # We treat UnknownX instances as NULL in DB
 }}
-GROUP BY ?uri ?catalogue
+GROUP BY ?suffix ?catalogue
 ORDER BY ASC(?suffix)""",
     "folder": "catalogue",
     "datasource": datasources["HITO"],
@@ -230,7 +231,7 @@ ORDER BY ASC(?suffix)""",
     "fields": "(suffix,catalogue_suffix,n,label,comment,synonyms,dct_source,dce_sources)",
     "arrayfields": [5, 6, 7],
 }
-
+#print(classified["query"])
 # workaround to exclude study citations
 
 citation_has_classified = {
@@ -345,7 +346,7 @@ relations = map(
 ({suffix("?x")} as ?{d["fieldList"][1]})
 {{
  ?uri a hito:SoftwareProduct; hito:{d["p"]} ?x.
-}} ORDER BY ASC(?suffix)""",
+}} ORDER BY ASC(?swp_suffix) ASC(?{d["fieldList"][1]})""",
         "folder": "relation",
         "datasource": datasources["HITO"],
         "type": "datasource",
@@ -355,7 +356,6 @@ relations = map(
     },
     relationData,
 )
-
 classes = [
     standard,
     language,
@@ -370,4 +370,4 @@ classes = [
     citation,
     citation_has_classified,
 ] + list(relations)
-
+#classes=[classified]
