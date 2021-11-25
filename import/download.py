@@ -7,10 +7,13 @@ import csv
 import os
 import shutil
 import rdflib
+import timeit
 from functools import reduce
 
+start = timeit.default_timer()
+
 def escape(s):
-    return "E'" + s.replace("'", "''") + "'"  # escape single quotes, add quotes for SQL
+    return "E'" + s.strip().replace("'", "''").replace("\n"," ") + "'"  # escape single quotes, replace newlines with spaces, add quotes for SQL
 
 
 def valueMap(value, isArray):
@@ -116,5 +119,6 @@ for clazz in classes:
                 singleFile.write(content)
         allFile.write(content)
 statprint = lambda s: s[0]+" ["+str(s[1])+"]"
-print("Successfully downloaded",reduce(lambda a,b: a+" "+b,map(statprint, stats)))
+stop = timeit.default_timer()
+print("Successfully downloaded",reduce(lambda a,b: a+" "+b,map(statprint, stats)),"in",int(stop-start),"seconds.")
 allFile.close()

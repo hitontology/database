@@ -187,7 +187,7 @@ citation = {
  OPTIONAL {{?citation rdfs:comment ?comment.}}
 }}
 GROUP BY ?citation ?uri ?p_suffix
-ORDER BY ASC(?uri)""",
+ORDER BY ASC(?swp_suffix) ASC(?suffix)""",
     "folder": "swp",
     "datasource": datasources["HITO"],
     "table": "citation",
@@ -231,7 +231,6 @@ ORDER BY ASC(?suffix)""",
     "fields": "(suffix,catalogue_suffix,n,label,comment,synonyms,dct_source,dce_sources)",
     "arrayfields": [5, 6, 7],
 }
-#print(classified["query"])
 # workaround to exclude study citations
 
 citation_has_classified = {
@@ -247,14 +246,15 @@ SELECT
     ?swp a hito:SoftwareProduct; ?q ?citation.
 }}
 GROUP BY ?citation ?classified
-HAVING (COUNT(?swp)>=1)""",
+HAVING (COUNT(?swp)>=1)
+ORDER BY ASC(?citation_suffix) ASC(?classified_suffix)
+""",
     "folder": "relation",
     "datasource": datasources["HITO"],
     "table": "citation_has_classified",
     "fields": "(citation_suffix,classified_suffix)",
     "arrayfields": [],
 }
-# print(citation_has_classified["query"])
 
 classifiedComponent = {
     "query": f"""
@@ -264,7 +264,8 @@ SELECT
 {{
  ?child ?p ?parent.
  ?p rdfs:subPropertyOf hito:subClassifiedOf.
-}} ORDER BY ASC(?suffix)""",
+}}
+ORDER BY ASC(?parent_suffix) ASC(?child_suffix)""",
     "folder": "relation",
     "datasource": datasources["HITO"],
     "table": "classified_has_child",
@@ -279,7 +280,8 @@ SELECT
 ({suffix("?function")} AS ?function_suffix)
 {{
  ?feature hito:supportsFunction ?function.
-}} ORDER BY ASC(?suffix)""",
+}}
+ORDER BY ASC(?feature_suffix) ASC(?function_suffix)""",
     "folder": "relation",
     "datasource": datasources["HITO"],
     "table": "feature_supports_function",
