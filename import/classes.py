@@ -7,7 +7,7 @@ datasources = {
     "HITO": {
         "name": "HITO_FILE",
         "type": "file",
-        "default": "/tmp/hito-all.nt",
+        "default": "/tmp/hito.nt",
     },
     "HITO_ENDPOINT": {
         "name": "HITO_SPARQL_ENDPOINT",
