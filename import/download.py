@@ -104,13 +104,13 @@ for clazz in classes:
     else:
         #print("Downloaded class " + clazz["table"],"["+str(len(rows))+"]")
         stats.append((clazz["table"],len(rows)))
-        content = "\\echo FILL TABLE " + clazz["table"] + "\n"
+        content = "\\echo Filling table " + clazz["table"] + " with " + str(len(rows)) + " rows...\n"
         content += "DELETE FROM " + clazz["table"] + ";\n"
-        content += "INSERT INTO " + clazz["table"] + clazz["fields"] + " VALUES" + "\n"
+        content += "INSERT INTO " + clazz["table"] + clazz["fields"] + " VALUES\n"
         content += ",\n".join(
             map(lambda line: insert(line, clazz["arrayfields"]), rows)
         ) + "\n"
-        content += "ON CONFLICT DO NOTHING;"  # skip duplicates instead of cancelling, only for testing
+        content += "ON CONFLICT DO NOTHING;\n"  # skip duplicates instead of cancelling, only for testing
         if DEBUG:
             folder = outputBase + clazz["folder"]
             if not os.path.exists(folder):
