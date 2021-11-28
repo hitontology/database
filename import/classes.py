@@ -368,8 +368,8 @@ classes = [
     softwareProduct,
     classified,
     classifiedComponent,
-    featureSupportsFunction,
     citation,
     citation_has_classified,
+    featureSupportsFunction,
 ] + list(relations)
 #classes=[classified]
