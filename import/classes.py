@@ -14,10 +14,15 @@ datasources = {
         "type": "endpoint",
         "default": "https://hitontology.eu/sparql",
     },
-    "DBPEDIA": {
+    "DBPEDIA_ENDPOINT": {
         "name": "DBPEDIA_SPARQL_ENDPOINT",
         "type": "endpoint",
         "default": "https://dbpedia.org/sparql",
+    },
+    "DBPEDIA": {
+        "name": "DBPEDIA_FILE",
+        "type": "file",
+        "default": "/tmp/dbpedia.ttl",
     },
     "SWO": {
         "name": "SWO_FILE",
@@ -62,11 +67,12 @@ ORDER BY ASC(?uri)""",
 language = {
     "query": """SELECT (REPLACE(STR(?uri),"http://dbpedia.org/resource/","") AS ?suffix) (STR(SAMPLE(?label)) AS ?label)
 {
- ?uri a dbo:Language;
-      rdfs:label ?label;
-      dbo:iso6391Code [].
+ ?uri a <http://dbpedia.org/ontology/Language>;
+      rdfs:label ?label.
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
-} ORDER BY ASC(?uri)""",
+}
+GROUP BY ?uri
+ORDER BY ASC(?uri)""",
     "folder": "attribute",
     "datasource": datasources["DBPEDIA"],
     "table": "language",
@@ -82,12 +88,14 @@ SELECT
 (STR(SAMPLE(?label)) AS ?label)
 #FROM <http://www.ebi.ac.uk/swo/swo.owl/1.7>
 {
- ?uri rdfs:subClassOf+ swo:SWO_0000002;
+ ?uri a hito:License;
+ #?uri rdfs:subClassOf+ swo:SWO_0000002;
       rdfs:label ?label.
- FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+# FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }
-GROUP BY ?uri
-ORDER BY ASC(?uri)""",
+#GROUP BY ?uri
+#ORDER BY ASC(?uri)
+""",
     "folder": "attribute",
     "datasource": datasources["SWO"],
     "table": "license",
@@ -98,7 +106,8 @@ ORDER BY ASC(?uri)""",
 programmingLanguage = {
     "query": """SELECT (REPLACE(STR(?uri),"http://dbpedia.org/resource/","") AS ?suffix) (STR(SAMPLE(?label)) AS ?label)
 {
- ?uri a yago:WikicatProgrammingLanguages ;
+# ?uri a yago:WikicatProgrammingLanguages ;
+ ?uri a <http://dbpedia.org/ontology/ProgrammingLanguage> ;
       rdfs:label ?label.
  FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
 }

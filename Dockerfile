@@ -21,5 +21,6 @@ COPY ./import/base ./base
 
 ENV HITO_FILE=${HITO_FILE:-/rdf/hito.nt}
 ENV SWO_FILE=${SWO_FILE:-/rdf/license.ttl}
+ENV DBPEDIA_FILE=${DBPEDIA_FILE:-/rdf/dbpedia.ttl}
 #ENV DBPEDIA_SPARQL_ENDPOINT
 CMD ["python","download.py"]
