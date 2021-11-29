@@ -81,25 +81,28 @@ ORDER BY ASC(?uri)""",
 }
 
 #  SWO is uploaded to the HITO endpoint, they are (transitive) subclasses, not instances
+# Model as hito:License as RDFLib seems to have problemy with property paths.
+# Langmatches filter seems to not work properly with RDFLib, comment it out.
 license = {
     "query": """PREFIX swo: <http://www.ebi.ac.uk/swo/>
 SELECT
 (REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/license/","") AS ?suffix)
 (STR(SAMPLE(?label)) AS ?label)
+?label
 #FROM <http://www.ebi.ac.uk/swo/swo.owl/1.7>
 {
  ?uri a hito:License;
  #?uri rdfs:subClassOf+ swo:SWO_0000002;
       rdfs:label ?label.
-# FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+ #FILTER((LANGMATCHES(LANG(?label),"en")) || (LANGMATCHES(LANG(?label),"")))
 }
-#GROUP BY ?uri
-#ORDER BY ASC(?uri)
+GROUP BY ?uri
+ORDER BY ASC(?uri)
 """,
     "folder": "attribute",
     "datasource": datasources["SWO"],
     "table": "license",
-    "fields": "(suffix, label)",
+    "fields": "(suffix)",
     "arrayfields": [],
 }
 
@@ -381,4 +384,4 @@ classes = [
     citation_has_classified,
     featureSupportsFunction,
 ] + list(relations)
-#classes=[classified]
+
