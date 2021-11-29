@@ -100,8 +100,10 @@ for clazz in classes:
         exit(1)
     #print(list(rows))
     if len(rows) == 0:
-        print(f"""No entries found for {clazz["table"]}:\n{clazz["query"]}""")
+        print(f"""No entries found for {clazz["table"]} with query:\n{clazz["query"]}""")
     else:
+        if len(rows) == 1:
+            print(f"""Only one entry {(list(rows)[0])} found for {clazz["table"]} with query:\n{clazz["query"]}""")
         #print("Downloaded class " + clazz["table"],"["+str(len(rows))+"]")
         stats.append((clazz["table"],len(rows)))
         content = "\\echo Filling table " + clazz["table"] + " with " + str(len(rows)) + " rows...\n"
