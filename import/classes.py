@@ -88,7 +88,6 @@ license = {
 SELECT
 (REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/license/","") AS ?suffix)
 (STR(SAMPLE(?label)) AS ?label)
-?label
 #FROM <http://www.ebi.ac.uk/swo/swo.owl/1.7>
 {
  ?uri a hito:License;
@@ -102,7 +101,7 @@ ORDER BY ASC(?uri)
     "folder": "attribute",
     "datasource": datasources["SWO"],
     "table": "license",
-    "fields": "(suffix)",
+    "fields": "(suffix,label)",
     "arrayfields": [],
 }
 
