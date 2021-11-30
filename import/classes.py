@@ -148,7 +148,7 @@ operatingSystem = {
 GROUP BY ?uri
 ORDER BY ASC(?suffix)""",
     "folder": "attribute",
-    "datasource": datasources["HITO"],
+    "datasource": datasources["DBPEDIA"],
     "table": "operatingsystem",
     "fields": "(suffix, label)",
     "arrayfields": [],
