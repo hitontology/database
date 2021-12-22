@@ -7,16 +7,16 @@ Contains software products and related attributes, such as licenses
 1. Append to ` ~/.ssh/config`:
 
         Host hitotunnel
-        Hostname 139.18.158.56
+        Hostname datrav.uni-leipzig.de
         ProxyJump star
-        LocalForward 5432 localhost:5433
+        LocalForward 5432 localhost:55432
         ControlMaster auto
         ControlPath ~/.ssh/sockets/%r@%h:%p
-        User snik
+        User root
 
 2. Open tunnel via `ssh -fN hitotunnel`
  
-3. When finished, close tunnel via `ssh -S ~/.ssh/sockets/snik@139.18.158.56:22 -O exit hitotunnel`
+3. When finished, close tunnel via `ssh -S ~/.ssh/sockets/root@datrav.uni-leipzig.de:22 -O exit hitotunnel`
 
 ## Import
 Import data from the Virtuoso SPARQL endpoint into the PostgreSQL database in two steps:
@@ -59,5 +59,9 @@ Copy `scripts/export/hito.properties.dist` to `scripts/export/hito.properties` a
     ./compare
     ./diff
 
-Or even better, `vimdiff export/output/all.ttl /path/to/my/ontology/swp.ttl` from the base directory and then you can directly push the changes into the ontology repository.
+Or even better, instead of `./diff` run `vimdiff export/output/all.ttl /path/to/my/ontology/swp.ttl` from the base directory and then you can directly push the changes into the ontology repository.
+When the ontology repository is updated, go on the server, run `git pull` in the `ontology` directory and then in the docker directory:
 
+    docker-compose down -v
+    docker-compose build --no-cache
+    docker-compose up

@@ -1,5 +1,5 @@
 jdbc.name=hito
-jdbc.url=jdbc:postgresql://localhost/hito
+jdbc.url=jdbc:postgresql://localhost/postgres
 jdbc.user=postgres
 jdbc.password=
 
