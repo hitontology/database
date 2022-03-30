@@ -8,7 +8,7 @@ insert into client(suffix,label) values ('Mobile','Mobile'), ('Native','Native')
 create table databasesystem(suffix VARCHAR(20) PRIMARY KEY, label VARCHAR(20) NOT NULL);
 insert into databasesystem(suffix,label) values ('MySql','MySQL'), ('PostgreSql','PostgreSQL'), ('IbmDb2','IBM DB2'), ('MariaDb','MariaDB'), ('MicrosoftSqlServer','Microsoft SQL Server'), ('MongoDb','MongoDB'), ('OracleDatabase','Oracle Database'), ('SapHana','SAP HANA'), ('TinyDb', 'TinyDB'), ('SQLite','SQLite');
 
-create type cataloguetype as enum('UserGroup', 'ApplicationSystemType', 'Feature', 'EnterpriseFunction', 'OrganizationalUnit');
+create type cataloguetype as enum('UserGroup', 'ApplicationSystemType', 'Feature', 'EnterpriseFunction', 'OrganizationalUnit','OutcomeCriteria');
 
 -- the main table
 -- client and databasesystem as arrays because they should be [0..n]

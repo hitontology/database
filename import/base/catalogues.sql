@@ -27,4 +27,5 @@ INSERT INTO catalogue(suffix,label,type) VALUES
 ('EhrSfmFeatureCatalogue','HL7 EHR-S FM Feature Catalogue','Feature'),
 ('JoshiPacsFeatureCatalogue','Joshi PACS Feature Catalogue','Feature'),
 ('MbApplicationSystemTypeCatalogue','HITO Application System Type Catalogue','ApplicationSystemType'),
+('AmmenwerthOutcomeCriteriaCatalogue','Ammenwerth Outcome Criteria Catalogue','OutcomeCriteria'),
 ('SnomedUserGroupCatalogue','SNOMED CT User Group Catalogue','UserGroup') ON CONFLICT DO NOTHING;
