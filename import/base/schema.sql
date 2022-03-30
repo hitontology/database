@@ -8,9 +8,7 @@ insert into client(suffix,label) values ('Mobile','Mobile'), ('Native','Native')
 create table databasesystem(suffix VARCHAR(20) PRIMARY KEY, label VARCHAR(20) NOT NULL);
 insert into databasesystem(suffix,label) values ('MySql','MySQL'), ('PostgreSql','PostgreSQL'), ('IbmDb2','IBM DB2'), ('MariaDb','MariaDB'), ('MicrosoftSqlServer','Microsoft SQL Server'), ('MongoDb','MongoDB'), ('OracleDatabase','Oracle Database'), ('SapHana','SAP HANA'), ('TinyDb', 'TinyDB'), ('SQLite','SQLite');
 
---create table cataloguetype(suffix VARCHAR(19) PRIMARY KEY);
--- insert into table cataloguetype(suffix) values ('UserGroup'), ('ApplicationSystem'), ('Feature'), ('EnterpriseFunction'), ('OrganizationalUnit');
-create type cataloguetype as enum('UserGroup', 'ApplicationSystem', 'Feature', 'EnterpriseFunction', 'OrganizationalUnit');
+create type cataloguetype as enum('UserGroup', 'ApplicationSystemType', 'Feature', 'EnterpriseFunction', 'OrganizationalUnit');
 
 -- the main table
 -- client and databasesystem as arrays because they should be [0..n]
@@ -242,7 +240,7 @@ FROM   citation;
 -- Assumes that all classifieds in that table are features
 CREATE VIEW swp_classified_rdf AS
 SELECT 'http://hitontology.eu/ontology/' || swp_suffix AS subject,
-       'http://hitontology.eu/ontology/directFeature'  AS predicate,
+       'http://hitontology.eu/ontology/fOffersFCla'  AS predicate,
        'http://hitontology.eu/ontology/' || classified_suffix AS object
 FROM   swp_has_classified;
 
