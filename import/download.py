@@ -9,8 +9,30 @@ import shutil
 import rdflib
 import timeit
 from functools import reduce
+from classes import classes
 
 start = timeit.default_timer()
+
+PROFILE = os.environ.get("DOWNLOAD_PROFILE") is not None
+DEBUG = os.environ.get("SQL_DEBUG") is not None
+
+SQL_OUTPUT_BASE_DIR_DEFAULT = "/tmp/sql/"
+outputBase = os.environ.get("SQL_OUTPUT_BASE_DIR")
+if outputBase == None:
+    outputBase = SQL_OUTPUT_BASE_DIR_DEFAULT
+    print(
+        "Environment variable SQL_OUTPUT_BASE_DIR not set, using default value",
+        outputBase,
+    )
+if not outputBase.endswith("/"):
+    outputBase += "/"
+#if os.path.exists(outputBase):
+#    shutil.rmtree(outputBase)
+os.makedirs(outputBase, 0o777, True)
+allFileName = outputBase+"hito.sql"
+if os.path.exists(allFileName):
+    print("Target file",allFileName,"already exists. Skipping download.")
+    exit(0)
 
 def escape(s):
     return "E'" + s.strip().replace("'", "''").replace("\n"," ") + "'"  # escape single quotes, replace newlines with spaces, add quotes for SQL
@@ -37,90 +59,70 @@ def insert(values, arrayfields):
     s = ",".join(mapped)
     return "(" + s + ")"
 
+def main():
+    allFile = open(allFileName, "w")
+    with open("base/schema.sql", "r") as schema:
+        shutil.copyfileobj(schema, allFile)
+    with open("base/catalogues.sql", "r") as catalogues:
+        shutil.copyfileobj(catalogues, allFile)
+        stats = []
+    for clazz in classes:
+        filename = clazz["table"] + ".sql"
+        rows = []
+        datasource = clazz["datasource"]
+        match(datasource["type"]):
+            case "file":
+                if not "graph" in datasource:
+                    graph = rdflib.Graph()
+                    graph.parse(datasource["value"])
+                    graph.namespace_manager.bind('hito', rdflib.URIRef('http://hitontology.eu/ontology/'))
+                    graph.namespace_manager.bind('skos', rdflib.namespace.SKOS, override=False)
+                    datasource["graph"] = graph
+                    graph = datasource["graph"]
+                    try:
+                        # https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result
+                        #rows = list(graph.query(clazz["query"]))
+                        rows = graph.query(clazz["query"])
+                    except:
+                        print("Error with SPARQL query ****************************\n"+clazz["query"]+"\n***************************************************")
+            case "endpoint":
+                parameters = {"query": clazz["query"], "format": "text/tab-separated-values"}
+                resp = requests.get(datasource["value"], params=parameters)
+                if resp.status_code != 200:
+                    print("Error with SPARQL query :\n" + resp.text)
+                    continue
+                readCSV = csv.reader(resp.text.splitlines(), delimiter="\t")
+                next(readCSV, None)  # skip CSV header
+                rows = list(readCSV)
+            case _:
+                print("Unknown type \""+datasource["type"]+"\". Aborting")
+                exit(1)
+            #print(list(rows))
+        if len(rows) == 0:
+            print(f"""No entries found for {clazz["table"]} with query:\n{clazz["query"]}""")
+        else:
+            if len(rows) == 1:
+                print(f"""Only one entry {(list(rows)[0])} found for {clazz["table"]} with query:\n{clazz["query"]}""")
+            #print("Downloaded class " + clazz["table"],"["+str(len(rows))+"]")
+            stats.append((clazz["table"],len(rows)))
+            content = "\\echo Filling table " + clazz["table"] + " with " + str(len(rows)) + " rows...\n"
+            content += "DELETE FROM " + clazz["table"] + ";\n"
+            content += "INSERT INTO " + clazz["table"] + clazz["fields"] + " VALUES\n"
+            content += ",\n".join(
+                map(lambda line: insert(line, clazz["arrayfields"]), rows)
+            ) + "\n"
+            content += "ON CONFLICT DO NOTHING;\n"  # skip duplicates instead of cancelling, only for testing
+            if DEBUG:
+                folder = outputBase + clazz["folder"]
+                if not os.path.exists(folder):
+                    os.makedirs(folder, 0o777, True)
+                with open(folder + "/" + filename, "w") as singleFile:
+                    singleFile.write(content)
+            allFile.write(content)
+    statprint = lambda s: s[0]+" ["+str(s[1])+"]"
+    stop = timeit.default_timer()
+    print("Successfully downloaded",reduce(lambda a,b: a+" "+b,map(statprint, stats)),"in",int(stop-start),"seconds.")
+    allFile.close()
 
-DEBUG = os.environ.get("SQL_DEBUG") is not None
-
-SQL_OUTPUT_BASE_DIR_DEFAULT = "/tmp/sql/"
-outputBase = os.environ.get("SQL_OUTPUT_BASE_DIR")
-if outputBase == None:
-    outputBase = SQL_OUTPUT_BASE_DIR_DEFAULT
-    print(
-        "Environment variable SQL_OUTPUT_BASE_DIR not set, using default value",
-        outputBase,
-    )
-if not outputBase.endswith("/"):
-    outputBase += "/"
-#if os.path.exists(outputBase):
-#    shutil.rmtree(outputBase)
-os.makedirs(outputBase, 0o777, True)
-allFileName = outputBase+"hito.sql"
-if os.path.exists(allFileName):
-    print("Target file",allFileName,"already exists. Skipping download.")
-    exit(0)
-
-from classes import classes
-
-allFile = open(allFileName, "w")
-with open("base/schema.sql", "r") as schema:
-    shutil.copyfileobj(schema, allFile)
-with open("base/catalogues.sql", "r") as catalogues:
-    shutil.copyfileobj(catalogues, allFile)
-    stats = []
-for clazz in classes:
-    filename = clazz["table"] + ".sql"
-    rows = []
-    datasource = clazz["datasource"]
-    # Python 3.10 with match not released for Arch Linux as of 2021-11-10
-    if(datasource["type"]=="file"):
-        if not "graph" in datasource:
-            graph = rdflib.Graph()
-            graph.parse(datasource["value"])
-            graph.namespace_manager.bind('hito', rdflib.URIRef('http://hitontology.eu/ontology/'))
-            graph.namespace_manager.bind('skos', rdflib.namespace.SKOS, override=False)
-            datasource["graph"] = graph
-        graph = datasource["graph"]
-        try:
-            # https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result
-            #rows = list(graph.query(clazz["query"]))
-            rows = graph.query(clazz["query"])
-        except:
-            print("Error with SPARQL query ****************************\n"+clazz["query"]+"\n***************************************************")
-
-    elif(datasource["type"]=="endpoint"):
-        parameters = {"query": clazz["query"], "format": "text/tab-separated-values"}
-        resp = requests.get(datasource["value"], params=parameters)
-        if resp.status_code != 200:
-            print("Error with SPARQL query :\n" + resp.text)
-            continue
-        readCSV = csv.reader(resp.text.splitlines(), delimiter="\t")
-        next(readCSV, None)  # skip CSV header
-        rows = list(readCSV)
-    else:
-        print("Unknown type "+t+". Aborting")
-        exit(1)
-    #print(list(rows))
-    if len(rows) == 0:
-        print(f"""No entries found for {clazz["table"]} with query:\n{clazz["query"]}""")
-    else:
-        if len(rows) == 1:
-            print(f"""Only one entry {(list(rows)[0])} found for {clazz["table"]} with query:\n{clazz["query"]}""")
-        #print("Downloaded class " + clazz["table"],"["+str(len(rows))+"]")
-        stats.append((clazz["table"],len(rows)))
-        content = "\\echo Filling table " + clazz["table"] + " with " + str(len(rows)) + " rows...\n"
-        content += "DELETE FROM " + clazz["table"] + ";\n"
-        content += "INSERT INTO " + clazz["table"] + clazz["fields"] + " VALUES\n"
-        content += ",\n".join(
-            map(lambda line: insert(line, clazz["arrayfields"]), rows)
-        ) + "\n"
-        content += "ON CONFLICT DO NOTHING;\n"  # skip duplicates instead of cancelling, only for testing
-        if DEBUG:
-            folder = outputBase + clazz["folder"]
-            if not os.path.exists(folder):
-                os.makedirs(folder, 0o777, True)
-            with open(folder + "/" + filename, "w") as singleFile:
-                singleFile.write(content)
-        allFile.write(content)
-statprint = lambda s: s[0]+" ["+str(s[1])+"]"
-stop = timeit.default_timer()
-print("Successfully downloaded",reduce(lambda a,b: a+" "+b,map(statprint, stats)),"in",int(stop-start),"seconds.")
-allFile.close()
+if __name__ == "__main__":
+    main()

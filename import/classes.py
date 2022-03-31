@@ -7,7 +7,7 @@ datasources = {
     "HITO": {
         "name": "HITO_FILE",
         "type": "file",
-        "default": "/tmp/hito.nt",
+        "default": "../../ontology/dist/hito.ttl",
     },
     "HITO_ENDPOINT": {
         "name": "HITO_SPARQL_ENDPOINT",
@@ -22,12 +22,12 @@ datasources = {
     "DBPEDIA": {
         "name": "DBPEDIA_FILE",
         "type": "file",
-        "default": "/tmp/dbpedia.ttl",
+        "default": "../../ontology/dist/dbpedia.ttl",
     },
     "SWO": {
         "name": "SWO_FILE",
         "type": "file",
-        "default": "/tmp/license.ttl",
+        "default": "../../ontology/dist/swo.ttl",
     },
 }
 
