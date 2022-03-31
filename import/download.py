@@ -7,6 +7,7 @@ import csv
 import os
 import shutil
 import rdflib
+import oxrdflib
 import timeit
 from functools import reduce
 from classes import classes
@@ -59,6 +60,12 @@ def insert(values, arrayfields):
     s = ",".join(mapped)
     return "(" + s + ")"
 
+# workaround for Oxigraph problem, reported at https://github.com/oxigraph/oxrdflib/issues/10
+prefixes = """PREFIX hito: <http://hitontology.eu/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX dce: <http://purl.org/dc/elements/1.1/>"""
 def main():
     allFile = open(allFileName, "w")
     with open("base/schema.sql", "r") as schema:
@@ -73,18 +80,21 @@ def main():
         match(datasource["type"]):
             case "file":
                 if not "graph" in datasource:
-                    graph = rdflib.Graph()
+                    graph = rdflib.Graph(store="Oxigraph")
                     graph.parse(datasource["value"])
                     graph.namespace_manager.bind('hito', rdflib.URIRef('http://hitontology.eu/ontology/'))
                     graph.namespace_manager.bind('skos', rdflib.namespace.SKOS, override=False)
+                    graph.namespace_manager.bind('rdfs', rdflib.namespace.RDFS, override=False)
                     datasource["graph"] = graph
-                    graph = datasource["graph"]
-                    try:
-                        # https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result
-                        #rows = list(graph.query(clazz["query"]))
-                        rows = graph.query(clazz["query"])
-                    except:
-                        print("Error with SPARQL query ****************************\n"+clazz["query"]+"\n***************************************************")
+                graph = datasource["graph"]
+                try:
+                    # https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result
+                    #rows = list(graph.query(clazz["query"]))
+                    rows = graph.query(prefixes+clazz["query"]) # workaround for oxigraph problem
+                except Exception as e:
+                    print("Error with SPARQL query, aborting *******************\n",clazz["query"],"\n*****************************\n",e)
+                    exit(1)
+
             case "endpoint":
                 parameters = {"query": clazz["query"], "format": "text/tab-separated-values"}
                 resp = requests.get(datasource["value"], params=parameters)

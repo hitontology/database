@@ -43,7 +43,8 @@ for key, datasource in datasources.items():
         datasource["value"] = datasource["default"]
 
 standard = {
-    "query": f"""SELECT
+        "query": f"""
+   SELECT
         (REPLACE(STR(?uri),"http://hitontology.eu/ontology/","") AS ?suffix)
         (STR(SAMPLE(?label)) AS ?label)
         (STR(SAMPLE(?comment)) AS ?comment)
