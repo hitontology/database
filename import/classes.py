@@ -46,12 +46,12 @@ standard = {
         "query": f"""
    SELECT
         (REPLACE(STR(?uri),"http://hitontology.eu/ontology/","") AS ?suffix)
-        (STR(SAMPLE(?label)) AS ?label)
-        (STR(SAMPLE(?comment)) AS ?comment)
+        (STR(SAMPLE(?l)) AS ?label)
+        (STR(SAMPLE(?z)) AS ?comment)
         ({concat("?source")} AS ?sources)
 {{
   ?uri a hito:Interoperability;
-          rdfs:label ?label.
+          rdfs:label ?l.
 
   OPTIONAL {{?uri <http://purl.org/dc/terms/source> ?source.}}
   OPTIONAL {{?uri rdfs:comment ?z.}}
@@ -66,11 +66,11 @@ ORDER BY ASC(?uri)""",
 }
 
 language = {
-    "query": """SELECT (REPLACE(STR(?uri),"http://dbpedia.org/resource/","") AS ?suffix) (STR(SAMPLE(?label)) AS ?label)
+    "query": """SELECT (REPLACE(STR(?uri),"http://dbpedia.org/resource/","") AS ?suffix) (STR(SAMPLE(?l)) AS ?label)
 {
  ?uri a <http://dbpedia.org/ontology/Language>;
-      rdfs:label ?label.
- FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+      rdfs:label ?l.
+ FILTER(LANGMATCHES(LANG(?l),"en")||LANGMATCHES(LANG(?l),""))
 }
 GROUP BY ?uri
 ORDER BY ASC(?uri)""",
@@ -88,13 +88,13 @@ license = {
     "query": """PREFIX swo: <http://www.ebi.ac.uk/swo/>
 SELECT
 (REPLACE(STR(?uri),"http://www.ebi.ac.uk/swo/license/","") AS ?suffix)
-(STR(SAMPLE(?label)) AS ?label)
+(STR(SAMPLE(?l)) AS ?label)
 #FROM <http://www.ebi.ac.uk/swo/swo.owl/1.7>
 {
  ?uri a hito:License;
  #?uri rdfs:subClassOf+ swo:SWO_0000002;
-      rdfs:label ?label.
- #FILTER((LANGMATCHES(LANG(?label),"en")) || (LANGMATCHES(LANG(?label),"")))
+      rdfs:label ?l.
+ #FILTER((LANGMATCHES(LANG(?l),"en")) || (LANGMATCHES(LANG(?l),"")))
 }
 GROUP BY ?uri
 ORDER BY ASC(?uri)
@@ -107,12 +107,12 @@ ORDER BY ASC(?uri)
 }
 
 programmingLanguage = {
-    "query": """SELECT (REPLACE(STR(?uri),"http://dbpedia.org/resource/","") AS ?suffix) (STR(SAMPLE(?label)) AS ?label)
+    "query": """SELECT (REPLACE(STR(?uri),"http://dbpedia.org/resource/","") AS ?suffix) (STR(SAMPLE(?l)) AS ?label)
 {
 # ?uri a yago:WikicatProgrammingLanguages ;
  ?uri a <http://dbpedia.org/ontology/ProgrammingLanguage> ;
-      rdfs:label ?label.
- FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+      rdfs:label ?l.
+ FILTER(LANGMATCHES(LANG(?l),"en")||LANGMATCHES(LANG(?l),""))
 }
 GROUP BY ?uri
 ORDER BY ASC(?uri)""",
@@ -124,11 +124,11 @@ ORDER BY ASC(?uri)""",
 }
 
 programmingLibrary = {
-    "query": """SELECT (REPLACE(STR(?uri),"http://hitontology.eu/ontology/","") AS ?suffix) (STR(SAMPLE(?label)) AS ?label)
+    "query": """SELECT (REPLACE(STR(?uri),"http://hitontology.eu/ontology/","") AS ?suffix) (STR(SAMPLE(?l)) AS ?label)
 {
  ?uri a hito:ProgrammingLibrary ;
-      rdfs:label ?label.
- FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+      rdfs:label ?l.
+ FILTER(LANGMATCHES(LANG(?l),"en")||LANGMATCHES(LANG(?l),""))
 }
 GROUP BY ?uri
 ORDER BY ASC(?uri)""",
@@ -140,11 +140,11 @@ ORDER BY ASC(?uri)""",
 }
 
 operatingSystem = {
-    "query": """SELECT (REPLACE(STR(?uri),"http://dbpedia.org/resource/","") AS ?suffix) (STR(SAMPLE(?label)) AS ?label)
+    "query": """SELECT (REPLACE(STR(?uri),"http://dbpedia.org/resource/","") AS ?suffix) (STR(SAMPLE(?l)) AS ?label)
 {
  ?uri a hito:OperatingSystem ;
-      rdfs:label ?label.
- FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+      rdfs:label ?l.
+ FILTER(LANGMATCHES(LANG(?l),"en")||LANGMATCHES(LANG(?l),""))
 }
 GROUP BY ?uri
 ORDER BY ASC(?suffix)""",
@@ -158,19 +158,19 @@ ORDER BY ASC(?suffix)""",
 softwareProduct = {
     "query": f"""SELECT
 ({suffix("?uri")} AS ?suffix)
-(SAMPLE(STR(?label)) AS ?label)
-(STR(SAMPLE(?comment)) AS ?comment)
+(SAMPLE(STR(?l)) AS ?label)
+(STR(SAMPLE(?cmt)) AS ?comment)
 (SAMPLE(?repository) AS ?coderepository)
 (SAMPLE(?homepage) AS ?homepage)
 {{
  ?uri a hito:SoftwareProduct;
-      rdfs:label ?label.
+      rdfs:label ?l.
  
- OPTIONAL {{?uri rdfs:comment ?comment.}}
+ OPTIONAL {{?uri rdfs:comment ?cmt.}}
  OPTIONAL {{?uri hito:repository ?repository.}}
  OPTIONAL {{?uri hito:homepage ?homepage.}}
 
- FILTER(LANGMATCHES(LANG(?label),"en")||LANGMATCHES(LANG(?label),""))
+ FILTER(LANGMATCHES(LANG(?l),"en")||LANGMATCHES(LANG(?l),""))
 }}
 GROUP BY ?uri
 ORDER BY ASC(?uri)""",
@@ -185,20 +185,20 @@ citation = {
     "query": f"""SELECT
 (REPLACE(STR(?citation),".*/","") AS ?suffix)
 (REPLACE(STR(?uri),".*/","") AS ?swp_suffix)
-(STR(SAMPLE(?label)) AS ?label)
-(STR(SAMPLE(?comment)) AS ?comment)
-(REPLACE(STRAFTER(STR(?type),"ontology/"),"Citation","") AS ?type)
+(STR(SAMPLE(?l)) AS ?label)
+(STR(SAMPLE(?cmt)) AS ?comment)
+(REPLACE(STRAFTER(STR(?t),"ontology/"),"Citation","") AS ?type)
 {{
  ?uri a  hito:SoftwareProduct;
      ?p ?citation.
      ?p rdfs:subPropertyOf hito:citation.
-  ?citation a ?type.
+  ?citation a ?t.
   BIND(REPLACE(STR(?p),".*/","") AS ?p_suffix).
 
- ?citation rdfs:label ?label.
- OPTIONAL {{?citation rdfs:comment ?comment.}}
+ ?citation rdfs:label ?l.
+ OPTIONAL {{?citation rdfs:comment ?cmt.}}
 }}
-GROUP BY ?citation ?uri ?p_suffix
+GROUP BY ?citation ?uri ?p_suffix ?t
 ORDER BY ASC(?swp_suffix) ASC(?suffix)""",
     "folder": "swp",
     "datasource": datasources["HITO"],
@@ -215,17 +215,17 @@ SELECT
 ?suffix
 (REPLACE(STR(?catalogue),".*/","") AS ?catalogue_suffix)
 (STR(SAMPLE(?n)) AS ?n)
-(STR(SAMPLE(?label)) AS ?label)
-(STR(SAMPLE(?comment)) AS ?comment)
+(STR(SAMPLE(?l)) AS ?label)
+(STR(SAMPLE(?cmt)) AS ?comment)
 ({concat("STR(?synonym)")} AS ?synonyms)
 ({concat("STR(?dct_source)")} AS ?dct_sources)
 ({concat("STR(?dce_source)")} AS ?dce_sources)
 {{
  ?classified ?p ?catalogue;
-             rdfs:label ?label.
+             rdfs:label ?l.
  #FILTER(?classified=<http://hitontology.eu/ontology/BbCardiovascularInformationSystem>) 
  
- OPTIONAL {{?classified rdfs:comment ?comment.}}
+ OPTIONAL {{?classified rdfs:comment ?cmt.}}
  OPTIONAL {{?classified skos:altLabel ?synonym.}}
  OPTIONAL {{?classified hito:memberNr ?n.}}
  OPTIONAL {{?classified dct:source ?dct_source.}}

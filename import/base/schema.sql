@@ -240,7 +240,7 @@ FROM   citation;
 -- Assumes that all classifieds in that table are features
 CREATE VIEW swp_classified_rdf AS
 SELECT 'http://hitontology.eu/ontology/' || swp_suffix AS subject,
-       'http://hitontology.eu/ontology/fOffersFCla'  AS predicate,
+       'http://hitontology.eu/ontology/spOffersFCla'  AS predicate,
        'http://hitontology.eu/ontology/' || classified_suffix AS object
 FROM   swp_has_classified;
 

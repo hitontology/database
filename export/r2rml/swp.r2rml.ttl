@@ -48,7 +48,7 @@
         rr:class hito:SoftwareProduct;
     ];
     rr:predicateObjectMap [
-        rr:predicate hito:fOffersFCla;
+        rr:predicate hito:spOffersFCla;
         rr:objectMap [ rr:template "http://hitontology.eu/ontology/{classified_suffix}"; rr:termType rr:IRI ];
     ].
 

@@ -65,7 +65,8 @@ prefixes = """PREFIX hito: <http://hitontology.eu/ontology/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX dct: <http://purl.org/dc/terms/>
-PREFIX dce: <http://purl.org/dc/elements/1.1/>"""
+PREFIX dce: <http://purl.org/dc/elements/1.1/>
+"""
 def main():
     allFile = open(allFileName, "w")
     with open("base/schema.sql", "r") as schema:
@@ -90,9 +91,10 @@ def main():
                 try:
                     # https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result
                     #rows = list(graph.query(clazz["query"]))
-                    rows = graph.query(prefixes+clazz["query"]) # workaround for oxigraph problem
+                    query = prefixes+clazz["query"]
+                    rows = graph.query(query) # workaround for oxigraph problem
                 except Exception as e:
-                    print("Error with SPARQL query, aborting *******************\n",clazz["query"],"\n*****************************\n",e)
+                    print("Error with SPARQL query, aborting *******************\n",query,"\n*****************************\n",e)
                     exit(1)
 
             case "endpoint":
