@@ -187,12 +187,12 @@ citation = {
 (REPLACE(STR(?uri),".*/","") AS ?swp_suffix)
 (STR(SAMPLE(?label)) AS ?label)
 (STR(SAMPLE(?comment)) AS ?comment)
-(CONCAT(UCASE(SUBSTR(?p_suffix, 1, 1)), SUBSTR(?p_suffix, 2)) AS ?type)
+(REPLACE(STRAFTER(STR(?type),"ontology/"),"Citation","") AS ?type)
 {{
  ?uri a  hito:SoftwareProduct;
      ?p ?citation.
      ?p rdfs:subPropertyOf hito:citation.
-
+  ?citation a ?type.
   BIND(REPLACE(STR(?p),".*/","") AS ?p_suffix).
 
  ?citation rdfs:label ?label.
