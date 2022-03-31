@@ -1,0 +1,3 @@
+# requires "pip install snakeviz"
+clear && rm -f /tmp/sql/hito.sql && python -m cProfile -o /tmp/download.prof download.py
+python -m snakeviz /tmp/download.prof
