@@ -213,47 +213,66 @@ create table swp_has_child(
 	PRIMARY KEY (parent_suffix, child_suffix)
 );
 
+CREATE TABLE rdf_property(
+	type cataloguetype NOT NULL,
+	swp_citation VARCHAR(20) NOT NULL,
+	swp_classified VARCHAR(20) NOT NULL,
+	citation_classified VARCHAR(20) NOT NULL,
+	PRIMARY KEY (type)
+);
+
+INSERT INTO rdf_property(type,swp_citation,swp_classified,citation_classified) values
+('UserGroup',				'spUsedByUserCit',	'spUsedByUserCla',	'userCitClassifiedAs'),
+('ApplicationSystemType',	'spIsOfAstCit',		'astIsOfAstCla',	'astCitClassifiedAs'),
+('Feature',					'spOffersFCit',		'spOffersFCla',		'fCitClassifiedAs'),
+('EnterpriseFunction',		'spSupportsEfCit',	'spSupportsEfCla',	'efCitClassifiedAs'),
+('OrganizationalUnit',		'spUsedInOuCit',	'spUsedInOuCla',	'ouCitClassifiedAs');
+
 CREATE VIEW classified_type AS
 SELECT classified.suffix, catalogue.type
 FROM classified RIGHT JOIN catalogue
 ON classified.catalogue_suffix = catalogue.suffix;
 
+-- seems to be unused by export
 CREATE VIEW citation_has_classified_type AS
 SELECT citation_has_classified.citation_suffix,
        citation_has_classified.classified_suffix,
        citation.type,
-
-       'http://hitontology.eu/ontology/' ||
-       LOWER(SUBSTRING(CAST(citation.type AS varchar) FOR 1)) ||
-       SUBSTRING(CAST(citation.type AS varchar) FROM 2) AS property
-FROM   citation INNER JOIN citation_has_classified
-ON     citation.suffix = citation_has_classified.citation_suffix;
+       'http://hitontology.eu/ontology/' || rdf_property.citation_classified AS property
+FROM		citation
+INNER JOIN	citation_has_classified
+ON			citation.suffix = citation_has_classified.citation_suffix
+INNER JOIN	rdf_property
+ON			citation.type = rdf_property.type;
 
 CREATE VIEW swp_citation_rdf AS
-SELECT 'http://hitontology.eu/ontology/' || swp_suffix AS subject,
-       'http://hitontology.eu/ontology/' ||
-       LOWER(SUBSTRING(CAST(citation.type AS varchar) FOR 1)) ||
-       SUBSTRING(CAST(citation.type AS varchar) FROM 2) AS predicate,
-       uri AS object
-FROM   citation;
+SELECT 'http://hitontology.eu/ontology/' || citation.swp_suffix AS subject,
+       'http://hitontology.eu/ontology/' || rdf_property.swp_citation AS predicate,
+       citation.uri AS object
+FROM		citation
+INNER JOIN	rdf_property
+ON			citation.type = rdf_property.type;
 
 -- Assumes that all classifieds in that table are features
 CREATE VIEW swp_classified_rdf AS
-SELECT 'http://hitontology.eu/ontology/' || swp_suffix AS subject,
-       'http://hitontology.eu/ontology/spOffersFCla'  AS predicate,
-       'http://hitontology.eu/ontology/' || classified_suffix AS object
-FROM   swp_has_classified;
+SELECT 'http://hitontology.eu/ontology/' || swp_has_classified.swp_suffix AS subject,
+       'http://hitontology.eu/ontology/' || rdf_property.swp_classified  AS predicate,
+       'http://hitontology.eu/ontology/' || swp_has_classified.classified_suffix AS object
+FROM		swp_has_classified
+INNER JOIN	classified_type
+ON			swp_has_classified.classified_suffix = classified_type.suffix
+INNER JOIN	rdf_property
+ON			classified_type.type = rdf_property.type;
 
 CREATE VIEW citation_classified_rdf AS
 SELECT citation.uri AS subject,
-       'http://hitontology.eu/ontology/' ||
-       LOWER(SUBSTRING(CAST(citation.type AS varchar) FOR 1)) ||
-       SUBSTRING(CAST(citation.type AS varchar) FROM 2) ||
-       'Classified' AS predicate,
+       'http://hitontology.eu/ontology/' || rdf_property.citation_classified AS predicate,
        'http://hitontology.eu/ontology/' || citation_has_classified.classified_suffix AS object                                       
-FROM   citation INNER JOIN citation_has_classified 
-ON     citation.suffix = citation_has_classified.citation_suffix;
-
+FROM		citation
+INNER JOIN	citation_has_classified 
+ON			citation.suffix = citation_has_classified.citation_suffix
+INNER JOIN	rdf_property
+ON			citation.type = rdf_property.type;
 
 CREATE VIEW classified_has_child_type AS
 SELECT
