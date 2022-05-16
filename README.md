@@ -1,3 +1,6 @@
+## :warning: **The HITO Database is neither used nor maintained anymore. It was only used together with the [Database Frontend](https://github.com/hitontology/database-frontend/), which is archived as well.**
+This repository has been archived on 2022-05-16.
+
 # HITO Database
 Populate the HITO PostgreSQL database and export it back to RDF.
 Contains software products and related attributes, such as licenses
