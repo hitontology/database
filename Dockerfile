@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # python:alpine would work as well and is smaller but python:slim is also used in the database frontend.
 FROM python:slim
 
